@@ -1,0 +1,6 @@
+# -v
+-lib golgi
+-D no_debug
+-cp src
+-main Main
+-cpp build
