@@ -31,7 +31,6 @@ package;
 
 
 <target id="haxe">
-
     <flag value="-Iinclude"/>
     <flag value="-I./include"/>
     <flag value="-I${H2O}/include"/>
@@ -45,12 +44,20 @@ package;
     <flag value="-L${H2O}/"/>
     <flag value="-v"/>
 
+    <lib name="-ldl" />
     <lib name="-luv" />
     <lib name="-lh2o" />
     <lib name="-lssl" />
     <lib name="-lcrypto" />
     <lib name="-lz" />
     <lib name="-lh2o-evloop" />
+
+    <!--
+    <flag value="-Wall"/>
+    <flag value="-static"/>
+    -->
+    
+    
 
 </target>
 

@@ -20,6 +20,9 @@
  * IN THE SOFTWARE.
  */
 
+// #define H2O_DEFAULT_NUM_NAME_RESOLUTION_THREADS 32
+// #define H2O_DEFAULT_OCSP_UPDATER_MAX_THREADS 10
+
 #define H2O_USE_LIBUV 1
 
 #include <hxcpp.h>
