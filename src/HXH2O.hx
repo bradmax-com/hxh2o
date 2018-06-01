@@ -38,7 +38,6 @@ package;
     <flag value="-I/usr/include" if="linux"/>
     <flag value="-I${H2O}/deps/yoml"/>
 
-
     <flag value="-L/usr/lib/x86_64-linux-gnu/" if="linux"/>
     <flag value="-L/opt/local/lib/" if="mac"/>
     <flag value="-L${H2O}/"/>
@@ -51,14 +50,6 @@ package;
     <lib name="-lcrypto" />
     <lib name="-lz" />
     <lib name="-lh2o-evloop" />
-
-    <!--
-    <flag value="-Wall"/>
-    <flag value="-static"/>
-    -->
-    
-    
-
 </target>
 
 

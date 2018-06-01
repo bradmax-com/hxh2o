@@ -73,24 +73,28 @@ class Router<I,O>{
     
     public function resolve(path:String):I->O->Void{
         var apath:Array<String> = path.split("/");
-        var vpath:Array<{part:String, isVar:Bool}> = [];
         
         var currentRoute = routes.subRoutes;
         var func:Map<String, Dynamic>->I->O->Void = null;
-        var params = new Map<String, Dynamic>();
+        var params:Map<String, Dynamic> = null;
         
         for(i in apath){
-            if(currentRoute.exists(i)){
+            if(currentRoute == null){
+                return null;
+            }else if(currentRoute.exists(i)){
             	var node = currentRoute.get(i);
-            	vpath.push({part: i, isVar: false});
 	            currentRoute = node.subRoutes;
 	            func = node.callback;
         	}else if(currentRoute.exists("*")){
             	var node = currentRoute.get("*");
-            	vpath.push({part: node.variableName, isVar: true});
+                if(params == null)
+                    params = new Map<String, Dynamic>();
+
                 params.set(node.variableName, parse(i));
                 currentRoute = node.subRoutes;
                 func = node.callback;
+            }else{
+                return null;
             }
         }
 
