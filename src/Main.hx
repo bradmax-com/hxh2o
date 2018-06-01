@@ -1,7 +1,7 @@
 package;
 
-typedef Req = HXH2O.Request;
-typedef Res = HXH2O.Response;
+typedef H2oReq = HXH2O.Request;
+typedef H2oRes = HXH2O.Response;
 
 class Main
 {
@@ -9,50 +9,25 @@ class Main
         new Main();
     }
 
-    var router = new Router<Req,Res>();
+    var api = new H2oApi();
 
     public function new(){
-        router.addRoute("user/:id/name", userName);
-        router.addRoute("user/:id", user);
-        router.addRoute("stats/v1/collect", statsCollect);
-        router.print();
-
-        HXH2O.getInstance().registerHandler(handler);
-        HXH2O.getInstance().bind("0.0.0.0", 12345);
+        api.addRoute("user/:id/name", userName);
+        api.addRoute("user/:id", user);
+        api.addRoute("stats/v1/collect", statsCollect);
+        api.bind("0.0.0.0", 12345);
     }
 
-    function userName(params:Map<String, Dynamic>, req:Req, res:Res){
-
+    function userName(params:Map<String, Dynamic>, req:H2oReq, res:H2oRes){
+        res.status = 200;
+        res.reason = "OK";
     }
 
-    function user(params:Map<String, Dynamic>, req:Req, res:Res){
-
-    }
-
-    function statsCollect(params:Map<String, Dynamic>, req:Req, res:Res){
+    function user(params:Map<String, Dynamic>, req:H2oReq, res:H2oRes){
 
     }
 
-    function unknownPath(path:String){
+    function statsCollect(params:Map<String, Dynamic>, req:H2oReq, res:H2oRes){
 
-    }
-
-    public function handler(req:Req, res:Res){
-        var path:String = req.path.split("?")[0];
-        
-        path = path.charAt(0) == "/"
-            ? path.substr(1)
-            : path;
-
-        path = path.charAt(path.length - 1) == "/"
-            ? path.substr(0, path.length - 1)
-            : path;
-
-        var f = router.resolve(path);
-
-        if(f == null)
-            unknownPath(path);
-        else
-            f(req, res);
     }
 }
