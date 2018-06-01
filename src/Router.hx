@@ -19,7 +19,7 @@ class Router<I,O>{
             r = routes;
         
         if(r.callback != null)
-            trace(path);
+            Sys.println(path);
         
         if(r.subRoutes == null)
             return;

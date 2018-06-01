@@ -16,6 +16,11 @@ class H2oApi
     }
 
     public function bind(host:String, port:Int){
+        Sys.println("------------KNOWN-ROUTES------------");
+        router.print();
+        Sys.println("------------------------------------");
+        Sys.println('HOST: $host PORT: $port');
+        Sys.println("------------------------------------");
         HXH2O.getInstance().bind(host, port);
     }
 
