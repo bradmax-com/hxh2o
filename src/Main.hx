@@ -34,11 +34,12 @@ class Main
     }
 
     function unknownPath(path:String){
-        
+
     }
 
     public function handler(req:Req, res:Res){
         var path:String = req.path.split("?")[0];
+        
         path = path.charAt(0) == "/"
             ? path.substr(1)
             : path;
@@ -48,6 +49,7 @@ class Main
             : path;
 
         var f = router.resolve(path);
+
         if(f == null)
             unknownPath(path);
         else
