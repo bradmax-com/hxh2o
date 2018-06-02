@@ -3,5 +3,5 @@
 
 
 
-rsync -r ../hxh2o/ mileena:/home/tkwiatek/hxh2o/
+rsync --exclude h2o --exclude v2.3.0-beta1.tar.gz -r ../hxh2o/ mileena:/home/tkwiatek/hxh2o/
 ssh mileena "cd /home/tkwiatek/hxh2o/ && haxe build.hxml"

@@ -1,16 +1,18 @@
 package;
 
 @:buildXml('
-<set name="HXH2O" value="/home/tkwiatek/hxh2o" />
-<set name="H2O" value="/home/tkwiatek/h2o" />
+<set name="HXH2O" value="${haxelib:hxh2o}" />
+<set name="H2O" value="${HXH2O}/h2o" />
+<echo value="_______________${HXH2O}" />
+<echo value="_______________${H2O}" />
 
 <files id="haxe">
     <flag value="-I${HXH2O}" />
 
     <compilerflag value="-I${HXH2O}/cpp/"/>
-    <compilerflag value="-I${H2O}/deps/yoml/"/>
     <compilerflag value="-I${HXH2O}/" />
     <compilerflag value="-I${H2O}/include/"/>
+    <compilerflag value="-I${H2O}/deps/yoml/"/>
 
     <compilerflag value="-I/opt/local/include/" if="mac"/>
     <compilerflag value="-I/usr/include/" if="linux"/>
@@ -34,9 +36,9 @@ package;
     <flag value="-Iinclude"/>
     <flag value="-I./include"/>
     <flag value="-I${H2O}/include"/>
+    <flag value="-I${H2O}/deps/yoml"/>
     <flag value="-I/opt/local/include" if="mac"/>
     <flag value="-I/usr/include" if="linux"/>
-    <flag value="-I${H2O}/deps/yoml"/>
 
     <flag value="-L/usr/lib/x86_64-linux-gnu/" if="linux"/>
     <flag value="-L/opt/local/lib/" if="mac"/>
