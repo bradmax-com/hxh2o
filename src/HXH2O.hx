@@ -2,7 +2,7 @@ package;
 
 @:buildXml('
 <set name="HXH2O" value="${haxelib:hxh2o}" />
-<set name="H2O" value="${HXH2O}/h2o" />
+<set name="H2O" value="${HXH2O}/../h2o" />
 <echo value="_______________${HXH2O}" />
 <echo value="_______________${H2O}" />
 
@@ -19,7 +19,7 @@ package;
     
     <compilerflag value="-I./include"/>
     <compilerflag value="-Iinclude"/>
-    <file name="${HXH2O}/cpp/simple.cpp" >
+    <file name="${HXH2O}/../cpp/simple.cpp" >
     </file>
 </files>
 

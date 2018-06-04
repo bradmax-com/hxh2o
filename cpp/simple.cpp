@@ -26,7 +26,7 @@
 #define H2O_USE_LIBUV 1
 
 #include <hxcpp.h>
-#include <Import.h>
+#include <../cpp/Import.h>
 #include <iostream>
 #include <string>
 #include <HXH2O.h>
