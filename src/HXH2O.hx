@@ -62,6 +62,7 @@ class Request {
     public var method:String;
     public var body:String;
     public var headers:Map<String, String>;
+    public var params:Map<String, String>;
 
     public function new(){}
 }
@@ -149,9 +150,37 @@ class HXH2O
     public static function request(req:CRequest){
         var request = new Request();
         request.body = req.body;
-        request.headers = req.headers;
         request.method = req.method;
         request.path = req.path;
+        request.headers = new Map();
+        request.params = new Map();
+
+        for(i in req.headers.keys()){
+            request.headers.set(i, req.headers.get(i));
+        }
+
+        var uri = req.path;
+        var i = request.path.indexOf( '?' );
+        var eq = -1;
+        var ap = -1;
+        var key = "";
+        var val = "";
+        if( i != -1 ) {
+            var s:String = uri.substr( i+1 );
+            uri = uri.substr(0, i);
+            while(s.length > 0){
+                eq = s.indexOf("=");
+                ap = s.indexOf("&");                
+                key = s.substr(0, eq);
+                val = s.substr(eq + 1, ap == -1 ? null : (ap - eq - 1));
+                
+                request.params.set( key, eq == ap ? null : val );
+                
+                s = s.substr(ap + 1);      
+                if(ap == -1)
+                    break;
+            }
+        }
 
         var response = new Response();
         
