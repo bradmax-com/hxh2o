@@ -1,3 +1,4 @@
+sudo apt-get install libssl-dev
 sudo rm -r h2o
 rm v2.3.0-beta1.tar.gz
 wget https://github.com/h2o/h2o/archive/v2.3.0-beta1.tar.gz

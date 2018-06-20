@@ -8,3 +8,9 @@ make
 sudo make install
 
 openssl version -a
+
+
+
+ 1466  sudo apt-get install libuv1.dev
+ 1582  find / -name libuv.a
+ 1822  PKG_CONFIG_PATH=/usr/local/libuv-1.4/lib/pkgconfig:/usr/local/openssl-1.0.2a/lib/pkgconfig cmake .

@@ -105,13 +105,13 @@ static int main_page(h2o_handler_t *self, h2o_req_t *req){
     while(resp->headerHasNext()){
         String name = resp->headerNext();
         String value = resp->headerGet(name);
-        std::string sname = (std::string)name.__s;
-        std::string svalue = (std::string)value.__s;
-
-        h2o_add_header_by_str(&req->pool, &req->res.headers, sname.c_str(), name.length, 0, sname.c_str(), svalue.c_str(), value.length);
+        // std::string sname = std::string(name.__s);
+        // std::string svalue = std::string(value.__s)+"";
+        // std::cout << "test1: " << sname << "(" << name.length << "):" << svalue << "(" << value.length << ")" << svalue.c_str() << "\n";
+        h2o_add_header_by_str(&req->pool, &req->res.headers, name.__s, name.length, 0, NULL, value.__s, value.length);
     }
     
-    h2o_add_header(&req->pool, &req->res.headers, H2O_TOKEN_CONTENT_TYPE, NULL, H2O_STRLIT("text/plain"));
+    // h2o_add_header(&req->pool, &req->res.headers, H2O_TOKEN_CONTENT_TYPE, NULL, H2O_STRLIT("text/plain"));
 
     h2o_start_response(req, &generator);
 
@@ -271,8 +271,8 @@ int start(const char * host, int port)
     hostconf = h2o_config_register_host(&config, h2o_iovec_init(H2O_STRLIT("default")), 65535);
 
     pathconf = register_handler(hostconf, "/", main_page);
-    if (logfh != NULL)
-        h2o_access_log_register(pathconf, logfh);
+    // if (logfh != NULL)
+    //     h2o_access_log_register(pathconf, logfh);
 
 #if H2O_USE_LIBUV
     uv_loop_t loop;
