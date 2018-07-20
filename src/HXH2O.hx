@@ -14,7 +14,7 @@ package;
     <compilerflag value="-I${H2O}/include/"/>
     <compilerflag value="-I${H2O}/deps/yoml/"/>
 
-    <compilerflag value="-I/opt/local/include/" if="mac"/>
+    <compilerflag value="-I/opt/local/include/" if="macos"/>
     <compilerflag value="-I/usr/include/" if="linux"/>
     
     <compilerflag value="-I./include"/>
@@ -28,7 +28,7 @@ package;
 </files>
 
 <files id="__main__">
-  <compilerflag value="-I./include"/>
+    <compilerflag value="-I./include"/>
 </files>
 
 
@@ -37,13 +37,12 @@ package;
     <flag value="-I./include"/>
     <flag value="-I${H2O}/include"/>
     <flag value="-I${H2O}/deps/yoml"/>
-    <flag value="-I/opt/local/include" if="mac"/>
+    <flag value="-I/opt/local/include" if="macos"/>
     <flag value="-I/usr/include" if="linux"/>
 
     <flag value="-L/usr/lib/x86_64-linux-gnu/" if="linux"/>
-    <flag value="-L/opt/local/lib/" if="mac"/>
+    <flag value="-L/opt/local/lib/" if="macos"/>
     <flag value="-L${H2O}/"/>
-    <flag value="-v"/>
 
     <lib name="-ldl" />
     <lib name="-luv" />
@@ -53,8 +52,6 @@ package;
     <lib name="-lz" />
     <lib name="-lh2o-evloop" />
 </target>
-
-
 ')
 
 class Request {

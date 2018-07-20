@@ -45,7 +45,6 @@
 #include <map>
 
 
-
 #define USE_HTTPS 0
 #define USE_MEMCACHED 0
 
@@ -76,9 +75,8 @@ static inline ::haxe::ds::StringMap toHxMap(h2o_headers_t headers){
         std::string name = std::string(header.name->base, header.name->len);
         String hxvalue = String((char*)value.c_str());
         String hxname = String((char*)name.c_str());
-
+        // std::cout << hxname << ": " << hxvalue << "\n";
         hxmap->set(hxname, hxvalue);
-        
     }
 
     return hxmap;
