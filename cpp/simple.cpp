@@ -113,8 +113,13 @@ static int main_page(h2o_handler_t *self, h2o_req_t *req){
 
     h2o_start_response(req, &generator);
 
-    std::string sbody = (std::string)resp->body.__s;
-    h2o_iovec_t body = h2o_strdup(&req->pool, sbody.c_str(), SIZE_MAX);
+    // std::string sbody = (std::string)resp->body.__s;
+    // h2o_iovec_t body = h2o_strdup(&req->pool, sbody.c_str(), SIZE_MAX);
+    // h2o_send(req, &body, 1, (h2o_send_state_t)1);
+
+        h2o_iovec_t body = h2o_strdup(&req->pool, 
+        resp->body->getBase(),
+        resp->body->getByteCount());
     h2o_send(req, &body, 1, (h2o_send_state_t)1);
 
     return 0;

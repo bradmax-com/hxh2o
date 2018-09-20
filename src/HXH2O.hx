@@ -68,12 +68,20 @@ class Response {
     private var map = new Map<String, String>();
     private var keys:Array<String> = [];
     private var index = 0;
+    private var body:haxe.io.BytesData;
 
     public var status:Int = 404;
     public var reason:String = "Not Found";
-    public var body:String = "";
 
     public function new(){}
+
+    public function setBody(b: String){
+        body = haxe.io.Bytes.ofString(b).getData();
+    }
+
+    public function setBodyBytes(b: haxe.io.Bytes){
+        body = b.getData();
+    }
 
     public function headerGet(key:String):String{
         return map.get(key);

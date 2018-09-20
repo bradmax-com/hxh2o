@@ -27,7 +27,7 @@ class H2oApi
     public dynamic function unknownPath(path:String, req:Req, res:Res){
         res.status = 500;
         res.reason = "Internal Server Error";
-        res.body = 'Path "$path" not found';
+        res.setBody('Path "$path" not found');
     }
 
     public function handler(req:Req, res:Res){

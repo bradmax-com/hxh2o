@@ -21,10 +21,13 @@ class Main
     function userName(params:Map<String, Dynamic>, req:H2oReq, res:H2oRes){
         res.status = 200;
         res.reason = "OK";
+        res.setBody('user id: ${params.get("id")}');
     }
 
     function user(params:Map<String, Dynamic>, req:H2oReq, res:H2oRes){
-
+        res.status = 200;
+        res.reason = "OK";
+        res.setBody('user id: ${params.get("id")}');
     }
 
     function statsCollect(params:Map<String, Dynamic>, req:H2oReq, res:H2oRes){
