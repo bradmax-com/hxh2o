@@ -103,21 +103,12 @@ static int main_page(h2o_handler_t *self, h2o_req_t *req){
     while(resp->headerHasNext()){
         String name = resp->headerNext();
         String value = resp->headerGet(name);
-        // std::string sname = std::string(name.__s);
-        // std::string svalue = std::string(value.__s)+"";
-        // std::cout << "test1: " << sname << "(" << name.length << "):" << svalue << "(" << value.length << ")" << svalue.c_str() << "\n";
         h2o_add_header_by_str(&req->pool, &req->res.headers, name.__s, name.length, 0, NULL, value.__s, value.length);
     }
-    
-    // h2o_add_header(&req->pool, &req->res.headers, H2O_TOKEN_CONTENT_TYPE, NULL, H2O_STRLIT("text/plain"));
 
     h2o_start_response(req, &generator);
 
-    // std::string sbody = (std::string)resp->body.__s;
-    // h2o_iovec_t body = h2o_strdup(&req->pool, sbody.c_str(), SIZE_MAX);
-    // h2o_send(req, &body, 1, (h2o_send_state_t)1);
-
-        h2o_iovec_t body = h2o_strdup(&req->pool, 
+    h2o_iovec_t body = h2o_strdup(&req->pool, 
         resp->body->getBase(),
         resp->body->getByteCount());
     h2o_send(req, &body, 1, (h2o_send_state_t)1);
@@ -267,10 +258,10 @@ int start(const char * host, int port)
     h2o_hostconf_t *hostconf;
     h2o_access_log_filehandle_t *logfh;
     h2o_pathconf_t *pathconf;
-
     signal(SIGPIPE, SIG_IGN);
 
     h2o_config_init(&config);
+    config.server_name = h2o_iovec_init(H2O_STRLIT("h2o-bradmax"));
     hostconf = h2o_config_register_host(&config, h2o_iovec_init(H2O_STRLIT("default")), 65535);
 
     pathconf = register_handler(hostconf, "/", main_page);
