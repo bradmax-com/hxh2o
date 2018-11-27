@@ -1,6 +1,6 @@
 -v
 -D no_debug
--D linux
+-D macos
 -cp src
 -main Main
 -cpp build

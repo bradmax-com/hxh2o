@@ -19,12 +19,12 @@ package;
     
     <compilerflag value="-I./include"/>
     <compilerflag value="-Iinclude"/>
-    <file name="${HXH2O}/../cpp/simple.cpp" >
-    </file>
+    <file name="${HXH2O}/cpp/simple.cpp" if="macos"/>
+    <file name="${HXH2O}/cpp/simple.cpp" if="linux"/>
 </files>
 
 <files id="haxe">
-  <compilerflag value="-I${HXH2O}" />
+    <compilerflag value="-I${HXH2O}" />
 </files>
 
 <files id="__main__">
@@ -117,7 +117,7 @@ extern class CRequest {
 }
 
 @:headerCode('
-#include <../../cpp/Import.h>
+#include <../cpp/Import.h>
 
 typedef struct CRequest CRequest;
     struct CRequest {
