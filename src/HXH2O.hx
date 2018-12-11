@@ -140,8 +140,8 @@ class HXH2O
 
     private function new(){}
 
-    public function bind(host:String, port:Int){
-        hxh2o_bind(host, port);
+    public function bind(host:String, port:Int, processesNum = 1){
+        hxh2o_bind_forking(host, port, processesNum);
     }
 
     dynamic private static function handlerFunction(req:Request, res:Response){
@@ -194,6 +194,6 @@ class HXH2O
         return response;
     }
 
-    @:extern @:native("_hxh2o_bind")
-    public static function hxh2o_bind(host:String, port:Int):Dynamic return null;
+    @:extern @:native("_hxh2o_bind_forking")
+    public static function hxh2o_bind_forking(host:String, port:Int, processNum:Int):Dynamic return null;
 }
