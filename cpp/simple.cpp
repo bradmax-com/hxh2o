@@ -143,40 +143,43 @@ static void on_accept(uv_stream_t *listener, int status)
     h2o_accept(&accept_ctx, sock);
 }
 
-static int create_listener(const char * host, int port, int processes_num)
+static int create_listener(const char * host, int port)
 {
     static uv_tcp_t listener;
     struct sockaddr_in addr;
+    int on = 1;
     int r;
+    uv_os_fd_t socket_fd;
+    uv_tcp_t *server = (uv_tcp_t *) malloc(sizeof(uv_tcp_t));
 
-    uv_tcp_init(ctx.loop, &listener);
-    uv_ip4_addr(host, port, &addr);
-    // uv_ip4_addr("127.0.0.1", 7890, &addr);
-    if ((r = uv_tcp_bind(&listener, (struct sockaddr *)&addr, 0)) != 0) {
+    if(uv_ip4_addr(host, port, &addr) != 0) {
+        fprintf(stderr, "(hxh2o.create_listener) ERROR during uv_ip4_addr call\n", uv_strerror(r));
         goto Error;
     }
-
-    // Fork main process selected number of times.
-    // Do not populate fork in child processes.
-    // Perform after adress binding, but before starting listening.
-    // This will share socket between all processes.
-    for(r = 1; r < processes_num; r++) {
-        // fork() returns "0", when in child process.
-        if(fork() == 0) {
-            // Reinitialize any kernel state necessary in the child process after a fork(2) system call.
-            uv_loop_fork(ctx.loop);
-            break;
-        }
+    if(uv_tcp_init_ex(ctx.loop, server, AF_INET) != 0) {
+        fprintf(stderr, "(hxh2o.create_listener) ERROR during uv_tcp_init_ex call\n", uv_strerror(r));
+        goto Error;
     }
-
-    if ((r = uv_listen((uv_stream_t *)&listener, 128, on_accept)) != 0) {
-        fprintf(stderr, "uv_listen:%s\n", uv_strerror(r));
+    if(uv_fileno((const uv_handle_t *)server, &socket_fd) != 0) {
+        fprintf(stderr, "(hxh2o.create_listener) ERROR during uv_fileno call\n", uv_strerror(r));
+        goto Error;
+    }
+    if(setsockopt(socket_fd, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) < 0) {
+        fprintf(stderr, "(hxh2o.create_listener) ERROR during setsockopt call\n", uv_strerror(r));
+        goto Error;
+    }
+    if ((r = uv_tcp_bind(server, (struct sockaddr *)&addr, 0)) != 0) {
+        fprintf(stderr, "(hxh2o.create_listener) ERROR during uv_tcp_bind call\n", uv_strerror(r));
+        goto Error;
+    }
+    if ((r = uv_listen((uv_stream_t *)server, 128, on_accept)) != 0) {
+        fprintf(stderr, "(hxh2o.create_listener) uv_listen:%s\n", uv_strerror(r));
         goto Error;
     }
 
     return 0;
 Error:
-    uv_close((uv_handle_t *)&listener, NULL);
+    uv_close((uv_handle_t *)server, NULL);
     return r;
 }
 
@@ -195,7 +198,7 @@ static void on_accept(h2o_socket_t *listener, const char *err)
     h2o_accept(&accept_ctx, sock);
 }
 
-static int create_listener(const char * host, int port, int processes_num)
+static int create_listener(const char * host, int port)
 {
     struct sockaddr_in addr;
     int fd, reuseaddr_flag = 1;
@@ -203,7 +206,7 @@ static int create_listener(const char * host, int port, int processes_num)
 
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    // TODO: fix - handle host ip and processes number.
+    // TODO: fix - handle host IP
     addr.sin_addr.s_addr = htonl(0x7f000001);
     addr.sin_port = htons(port);
 
@@ -268,7 +271,7 @@ static int setup_ssl(const char *cert_file, const char *key_file, const char *ci
 }
 
 
-int start(const char * host, int port, int processes_num)
+int start(const char * host, int port)
 {
     h2o_hostconf_t *hostconf;
     h2o_access_log_filehandle_t *logfh;
@@ -301,7 +304,7 @@ int start(const char * host, int port, int processes_num)
     accept_ctx.ctx = &ctx;
     accept_ctx.hosts = config.hosts;
 
-    if (create_listener(host, port, processes_num) != 0) {
+    if (create_listener(host, port) != 0) {
         fprintf(stderr, "failed to listen to %s:%i:%s\n", host, port, strerror(errno));
         goto Error;
     }
@@ -321,14 +324,8 @@ Error:
 
 Dynamic _hxh2o_bind(String host, int port)
 {
-    start(host.__s, port, 0);
+    start(host.__s, port);
     
     printf("%s\n", "This is a string.");
     return "666";
-}
-
-Dynamic _hxh2o_bind_forking(String host, int port, int processes_num)
-{
-    start(host.__s, port, processes_num);
-    return "started...";
 }

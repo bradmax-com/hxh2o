@@ -15,13 +15,13 @@ class H2oApi
         router.addRoute(path, func);
     }
 
-    public function bind(host:String, port:Int, processNumbers = 1){
+    public function bind(host:String, port:Int){
         Sys.println("------------KNOWN-ROUTES------------");
         router.print();
         Sys.println("------------------------------------");
         Sys.println('HOST: $host PORT: $port');
         Sys.println("------------------------------------");
-        HXH2O.getInstance().bind(host, port, processNumbers);
+        HXH2O.getInstance().bind(host, port);
     }
 
     public dynamic function unknownPath(path:String, req:Req, res:Res){
