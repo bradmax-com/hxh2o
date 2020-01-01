@@ -2,7 +2,8 @@ package;
 
 @:buildXml('
 <set name="HXH2O" value="${haxelib:hxh2o}" />
-<set name="H2O" value="${HXH2O}/../h2o" />
+<set name="H2O" value="${HXH2O}/../h2o" if="linux"/>
+<set name="H2O" value="${HXH2O}/h2o" if="macos"/>
 <echo value="_______________${HXH2O}" />
 <echo value="_______________${H2O}" />
 
@@ -32,7 +33,7 @@ package;
 </files>
 
 
-<target id="haxe">
+<target id="haxe" if="linux">
     <flag value="-Iinclude"/>
     <flag value="-I./include"/>
     <flag value="-I${H2O}/include"/>
@@ -44,13 +45,34 @@ package;
     <flag value="-L/opt/local/lib/" if="macos"/>
     <flag value="-L${H2O}/"/>
 
-    <lib name="-ldl" />
-    <lib name="-luv" />
+    <lib name="-ldl"/>
+    <lib name="-luv" if="linux"/>
     <lib name="-lh2o" />
     <lib name="-lssl" />
     <lib name="-lcrypto" />
-    <lib name="-lz" />
     <lib name="-lh2o-evloop" />
+    <lib name="-lz" />
+</target>
+
+<target id="haxe" if="macos">
+    <flag value="-Iinclude"/>
+    <flag value="-I./include"/>
+    <flag value="-I${H2O}/include"/>
+    <flag value="-I${H2O}/deps/yoml"/>
+    <flag value="-I/opt/local/include" if="macos"/>
+    <flag value="-I/usr/include" if="linux"/>
+
+    <flag value="-L/usr/lib/x86_64-linux-gnu/" if="linux"/>
+    <flag value="-L/opt/local/lib/" if="macos"/>
+    <flag value="-L${H2O}/"/>
+
+    <lib name="-lh2o" />
+    <lib name="-lh2o-evloop" />
+    <lib name="-ldl"/>
+    <lib name="-luv"/>
+    <lib name="-lssl" />
+    <lib name="-lcrypto" />
+    <lib name="-lz" />
 </target>
 ')
 
@@ -140,8 +162,8 @@ class HXH2O
 
     private function new(){}
 
-    public function bind(host:String, port:Int){
-        hxh2o_bind(host, port);
+    public function bind(host:String, port:Int, internalPort:Int){
+        hxh2o_bind(host, port, internalPort);
     }
 
     dynamic private static function handlerFunction(req:Request, res:Response){
@@ -195,5 +217,5 @@ class HXH2O
     }
 
     @:extern @:native("_hxh2o_bind")
-    public static function hxh2o_bind(host:String, port:Int):Dynamic return null;
+    public static function hxh2o_bind(host:String, port:Int, internalPort:Int):Dynamic return null;
 }

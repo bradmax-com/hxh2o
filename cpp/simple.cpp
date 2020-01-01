@@ -271,7 +271,7 @@ static int setup_ssl(const char *cert_file, const char *key_file, const char *ci
 }
 
 
-int start(const char * host, int port)
+int start(const char * host, int port, int internalPort)
 {
     h2o_hostconf_t *hostconf;
     h2o_access_log_filehandle_t *logfh;
@@ -308,6 +308,10 @@ int start(const char * host, int port)
         fprintf(stderr, "failed to listen to %s:%i:%s\n", host, port, strerror(errno));
         goto Error;
     }
+    if (create_listener(host, internalPort) != 0) {
+        fprintf(stderr, "failed to listen to %s:%i:%s\n", host, port, strerror(errno));
+        goto Error;
+    }
 
 #if H2O_USE_LIBUV
     uv_run(ctx.loop, UV_RUN_DEFAULT);
@@ -322,10 +326,8 @@ Error:
 
 
 
-Dynamic _hxh2o_bind(String host, int port)
+Dynamic _hxh2o_bind(String host, int port, int internalPort)
 {
-    start(host.__s, port);
-    
-    printf("%s\n", "This is a string.");
-    return "666";
+    start(host.__s, port, internalPort);
+    return "0";
 }

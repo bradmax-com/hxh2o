@@ -1,5 +1,5 @@
 -D no_debug
--D linux
+-D macos
 -cp src
--main Main
+-main MainThink
 -cpp build

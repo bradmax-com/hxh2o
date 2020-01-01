@@ -39,7 +39,7 @@ class Router<I,O>{
         while(apath.length > 0){
             var name = apath.shift();
             var last = apath.length == 0;
-        	var variableName:String = name.charAt(0) == ":"
+            var variableName:String = name.charAt(0) == ":"
                 ? name.substr(1)
                 : null;
             name = name.charAt(0) == ":"
@@ -82,10 +82,10 @@ class Router<I,O>{
             if(currentRoute == null){
                 return null;
             }else if(currentRoute.exists(i)){
-            	var node = currentRoute.get(i);
+                var node = currentRoute.get(i);
 	            currentRoute = node.subRoutes;
 	            func = node.callback;
-        	}else if(currentRoute.exists("*")){
+            }else if(currentRoute.exists("*")){
             	var node = currentRoute.get("*");
                 if(params == null)
                     params = new Map<String, Dynamic>();
@@ -98,10 +98,14 @@ class Router<I,O>{
             }
         }
 
-        if(func == null)
+        if(func == null){
             return null;
-        else
+        }else{
+            if(params == null)
+                params = new Map<String, Dynamic>();
+                
             return func.bind(params);
+        }
     }
 
     public function parse(value:String):Dynamic{
