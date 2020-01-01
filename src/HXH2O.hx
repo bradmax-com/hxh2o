@@ -2,7 +2,7 @@ package;
 
 @:buildXml('
 <set name="HXH2O" value="${haxelib:hxh2o}" />
-<set name="H2O" value="${HXH2O}/../h2o" if="linux"/>
+<set name="H2O" value="${HXH2O}/h2o" if="linux"/>
 <set name="H2O" value="${HXH2O}/h2o" if="macos"/>
 <echo value="_______________${HXH2O}" />
 <echo value="_______________${H2O}" />
