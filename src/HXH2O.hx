@@ -38,15 +38,14 @@ package;
     <flag value="-I./include"/>
     <flag value="-I${H2O}/include"/>
     <flag value="-I${H2O}/deps/yoml"/>
-    <flag value="-I/opt/local/include" if="macos"/>
-    <flag value="-I/usr/include" if="linux"/>
+    <flag value="-I/usr/include"/>
 
-    <flag value="-L/usr/lib/x86_64-linux-gnu/" if="linux"/>
-    <flag value="-L/opt/local/lib/" if="macos"/>
+    <flag value="-L/usr/lib/x86_64-linux-gnu/" unless="arm"/>
+    <flag value="-L/usr/lib/aarch64-linux-gnu/" if="arm"/>
     <flag value="-L${H2O}/"/>
 
     <lib name="-ldl"/>
-    <lib name="-luv" if="linux"/>
+    <lib name="-luv"/>
     <lib name="-lh2o" />
     <lib name="-lssl" />
     <lib name="-lcrypto" />
@@ -59,11 +58,9 @@ package;
     <flag value="-I./include"/>
     <flag value="-I${H2O}/include"/>
     <flag value="-I${H2O}/deps/yoml"/>
-    <flag value="-I/opt/local/include" if="macos"/>
-    <flag value="-I/usr/include" if="linux"/>
+    <flag value="-I/opt/local/include"/>
 
-    <flag value="-L/usr/lib/x86_64-linux-gnu/" if="linux"/>
-    <flag value="-L/opt/local/lib/" if="macos"/>
+    <flag value="-L/opt/local/lib/"/>
     <flag value="-L${H2O}/"/>
 
     <lib name="-lh2o" />
