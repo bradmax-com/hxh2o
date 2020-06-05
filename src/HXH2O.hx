@@ -179,8 +179,11 @@ class HXH2O
         request.headers = new Map();
         request.params = new Map();
 
-        for(i in req.headers.keys()){
-            request.headers.set(i, req.headers.get(i));
+        if(req.headers != null){
+            for(i in req.headers.keys()){
+                if(req.headers.exists(i))
+                    request.headers.set(i, req.headers.get(i));
+            }
         }
 
         var uri = req.path;
