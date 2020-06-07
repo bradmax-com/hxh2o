@@ -23,7 +23,7 @@
 // #define H2O_DEFAULT_NUM_NAME_RESOLUTION_THREADS 32
 // #define H2O_DEFAULT_OCSP_UPDATER_MAX_THREADS 10
 
-#define H2O_USE_LIBUV 1
+#define H2O_USE_LIBUV 0
 
 #include <hxcpp.h>
 #include <../cpp/Import.h>
@@ -316,8 +316,7 @@ int start(const char * host, int port, int internalPort)
 #if H2O_USE_LIBUV
     uv_run(ctx.loop, UV_RUN_DEFAULT);
 #else
-    while (h2o_evloop_run(ctx.loop, INT32_MAX) == 0)
-        ;
+    while (h2o_evloop_run(ctx.loop, INT32_MAX) == 0);
 #endif
 
 Error:
