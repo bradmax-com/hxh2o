@@ -45,12 +45,18 @@ class Router<I,O>{
             name = name.charAt(0) == ":"
                 ? "*"
                 : name;
-            
+
             if(currentRoute.exists(name)){
                 if(last){
                     var tmp = currentRoute.get(name);
                     tmp.callback = func;
                     tmp.variableName = variableName;
+                }else if(name == "*"){
+                    var point = currentRoute.get(name);
+                    if(point.subRoutes == null)
+                        point.subRoutes = new Map<String, RoutePart>();
+                  
+                    currentRoute = currentRoute.get(name).subRoutes;
                 }else{
                     currentRoute = currentRoute.get(name).subRoutes;
                 }
@@ -62,7 +68,7 @@ class Router<I,O>{
                     });
                 }else{
                     currentRoute.set(name, {
-                    subRoutes: new Map<String, RoutePart>(),
+                        subRoutes: new Map<String, RoutePart>(),
                         variableName: variableName
                     });
                     currentRoute = currentRoute.get(name).subRoutes;
