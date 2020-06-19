@@ -82,7 +82,7 @@ class Router<I,O>{
             values.push(pathParts[i]);
             
         var func:Map<String, Dynamic>->I->O->Void = null;
-        var params:Map<String, Dynamic> = [];
+        var params:Map<String, Dynamic> = new Map();
         for(i in 0...values.length)
             params.set(solver.vars[i], parse(values[i]));
         func = solver.callback;
