@@ -37,10 +37,14 @@ class Router<I,O>{
         var e = urlEreg.replace(path, "([a-zA-Z0-9._%\\-!~.*]+)");
         e = e.replace("/", "\\/");
 
+        
         paths.sort(function(a:Dynamic, b:Dynamic){
             var ia = a.len;
             var ib = b.len;
-            return ia < ib ? 1 : -1;
+            if(ia == ib){
+                return checkSemi(a, b);
+            }else
+                return ia < ib ? 1 : -1;
         });
 
         var urlParts = path.split("/");
@@ -58,6 +62,24 @@ class Router<I,O>{
             ereg: new EReg(e, "m"),
             callback: func
         });
+    }
+
+    function checkSemi(a:String, b:String):Int{
+        var aa = a.split("/");
+        var ab = b.split("/");
+
+        for(i in 0...aa.length){
+            var hasa = aa[i].charAt(0) == ":";
+            var hasb = ab[i].charAt(0) == ":";
+            if(hasa == hasb)
+                continue;
+            else if(hasa)
+                return 1;
+            else
+                return -1;
+        }
+
+        return 0;
     }
 
     public function print(){
