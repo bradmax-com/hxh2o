@@ -36,7 +36,7 @@ class Test{
         try{
 
             api.resolve("v1/buffer")(1,2);
-            api.resolve("v1/xxx")(1,2);
+            api.resolve("v1/qP9dlAzzj44vzd0AVzt45jsb6kGdMAkzI4KjV")(1,2);
             // api.resolve("v1/xxx/gym/enter")(2, 1);
             // api.resolve("v1/gym/enter/xxx")(2, 1);
             // api.resolve("void")(3, 1);

@@ -20,10 +20,10 @@ class Router<I,O>{
     
     public function addRoute(path:String, func:Map<String, Dynamic>->I->O->Void){
         var urlEreg = new EReg(":([a-zA-Z0-9._%\\-!~.*]+)", "g");
+        var matches = urlEreg.split(path).length; 
 		urlEreg.match(path);
-		var vars = [];
-        try{
-            var matches = urlEreg.split(path).length;            
+        var vars = [];
+        try{         
             var pos = urlEreg.matchedPos();
             vars.push(path.substr(pos.pos + 1, pos.len).replace("/",""));
             var i = 0;
@@ -37,7 +37,6 @@ class Router<I,O>{
         var e = urlEreg.replace(path, "([a-zA-Z0-9._%\\-!~.*]+)");
         e = e.replace("/", "\\/");
 
-        
         paths.sort(function(a:Dynamic, b:Dynamic){
             var ia = a.len;
             var ib = b.len;
@@ -105,8 +104,12 @@ class Router<I,O>{
             
         var func:Map<String, Dynamic>->I->O->Void = null;
         var params:Map<String, Dynamic> = new Map();
-        for(i in 0...values.length)
+        
+        for(i in 0...values.length){
+            trace(solver.vars[i], parse(values[i]));
             params.set(solver.vars[i], parse(values[i]));
+        }
+
         func = solver.callback;
 
         return func.bind(params);
