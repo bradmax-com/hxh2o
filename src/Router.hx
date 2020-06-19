@@ -1,117 +1,93 @@
 package;
 
-typedef RoutePart = {
-    @:optional var subRoutes:Map<String, RoutePart>;
-    @:optional var callback:Map<String, Dynamic>->Dynamic->Dynamic->Void;
-    @:optional var variableName:String;
-};
+using StringTools;
+
+
+typedef PathSolver = {
+    len: Int,
+    pattern: String,
+    vars: Array<String>,
+    parts: Array<Int>,
+    ereg: EReg,
+    callback: Map<String, Dynamic>->Dynamic->Dynamic->Void,
+}
 
 class Router<I,O>{
-    var routes:RoutePart = {
-        subRoutes: new Map<String, RoutePart>(),
-        callback: null
-    };
+
+    var paths:Array<PathSolver> = [];
     
     public function new(){}
     
-    public function print(?r:RoutePart = null, ?path:String = ""){
-        if(r == null)
-            r = routes;
-        
-        if(r.callback != null)
-            Sys.println(path);
-        
-        if(r.subRoutes == null)
-            return;
-        
-        var keys = r.subRoutes.keys();
-            
-        for(i in keys){
-            var sub = r.subRoutes.get(i);
-            print(sub, path + "/" + i);
-        } 
-    }
-    
     public function addRoute(path:String, func:Map<String, Dynamic>->I->O->Void){
-        var apath:Array<String> = path.split("/");
-        var currentRoute = routes.subRoutes;
-        
-        while(apath.length > 0){
-            var name = apath.shift();
-            var last = apath.length == 0;
-            var variableName:String = name.charAt(0) == ":"
-                ? name.substr(1)
-                : null;
-            name = name.charAt(0) == ":"
-                ? "*"
-                : name;
-
-            if(currentRoute.exists(name)){
-                if(last){
-                    var tmp = currentRoute.get(name);
-                    tmp.callback = func;
-                    tmp.variableName = variableName;
-                }else if(name == "*"){
-                    var point = currentRoute.get(name);
-                    if(point.subRoutes == null)
-                        point.subRoutes = new Map<String, RoutePart>();
-                  
-                    currentRoute = currentRoute.get(name).subRoutes;
-                }else{
-                    currentRoute = currentRoute.get(name).subRoutes;
-                }
-            }else{
-                if(last){
-                    currentRoute.set(name, {
-                        callback: func,
-                        variableName: variableName
-                    });
-                }else{
-                    currentRoute.set(name, {
-                        subRoutes: new Map<String, RoutePart>(),
-                        variableName: variableName
-                    });
-                    currentRoute = currentRoute.get(name).subRoutes;
-                }
-            }   
-        }
-    }
-    
-    public function resolve(path:String):I->O->Void{
-        var apath:Array<String> = path.split("/");
-        
-        var currentRoute = routes.subRoutes;
-        var func:Map<String, Dynamic>->I->O->Void = null;
-        var params:Map<String, Dynamic> = null;
-        
-        for(i in apath){
-            if(currentRoute == null){
-                return null;
-            }else if(currentRoute.exists(i)){
-                var node = currentRoute.get(i);
-	            currentRoute = node.subRoutes;
-	            func = node.callback;
-            }else if(currentRoute.exists("*")){
-            	var node = currentRoute.get("*");
-                if(params == null)
-                    params = new Map<String, Dynamic>();
-
-                params.set(node.variableName, parse(i));
-                currentRoute = node.subRoutes;
-                func = node.callback;
-            }else{
-                return null;
+        var urlEreg = new EReg(":([a-zA-Z0-9._%\\-!~.*]+)", "g");
+		urlEreg.match(path);
+		var vars = [];
+        try{
+            var matches = urlEreg.split(path).length;            
+            var pos = urlEreg.matchedPos();
+            vars.push(path.substr(pos.pos + 1, pos.len).replace("/",""));
+            var i = 0;
+            while(urlEreg.matchSub(path, pos.pos + pos.len) == true && i++<matches){
+                pos = urlEreg.matchedPos();
+	            vars.push(path.substr(pos.pos + 1, pos.len).replace("/",""));
             }
+            
+        }catch(err:Dynamic){}
+        
+        var e = urlEreg.replace(path, "([a-zA-Z0-9._%\\-!~.*]+)");
+        e = e.replace("/", "\\/");
+
+        paths.sort(function(a:Dynamic, b:Dynamic){
+            var ia = a.len;
+            var ib = b.len;
+            return ia < ib ? 1 : -1;
+        });
+
+        var urlParts = path.split("/");
+        var parts = [];
+        for(i in 0...urlParts.length){
+            if(urlParts[i].charAt(0) == ":")
+            	parts.push(i);            
         }
 
-        if(func == null){
-            return null;
-        }else{
-            if(params == null)
-                params = new Map<String, Dynamic>();
-                
-            return func.bind(params);
-        }
+        paths.push({
+            len: path.split("/").length,
+            pattern: path,
+            vars: vars,
+            parts: parts,
+            ereg: new EReg(e, "m"),
+            callback: func
+        });
+    }
+
+    public function print(){
+        for(i in paths)
+            trace(i.pattern);
+    }
+
+    public function resolve(path:String):I->O->Void{        
+        var solver:PathSolver = null;
+        for(i in 0...paths.length)
+            if(paths[i].ereg.match(path)){
+            	solver = paths[i];
+	            break;
+            }
+            
+        if(solver == null)
+            return null; 
+        
+        var pathParts = path.split("/");
+        var values:Array<String> = [];
+        for(i in solver.parts)
+            values.push(pathParts[i]);
+            
+        var func:Map<String, Dynamic>->I->O->Void = null;
+        var params:Map<String, Dynamic> = [];
+        for(i in 0...values.length)
+            params.set(solver.vars[i], parse(values[i]));
+        func = solver.callback;
+
+        return func.bind(params);
     }
 
     public function parse(value:String):Dynamic{
