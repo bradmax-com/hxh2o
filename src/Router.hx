@@ -106,7 +106,6 @@ class Router<I,O>{
         var params:Map<String, Dynamic> = new Map();
         
         for(i in 0...values.length){
-            trace(solver.vars[i], parse(values[i]));
             params.set(solver.vars[i], parse(values[i]));
         }
 
