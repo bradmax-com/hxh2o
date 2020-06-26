@@ -217,5 +217,5 @@ class HXH2O
     }
 
     @:extern @:native("_hxh2o_bind")
-    public static function hxh2o_bind(host:String, port:Int, internalPort:Int):Dynamic return null;
+    public static function hxh2o_bind(host:String, port:Int, internalPort:Int):Dynamic;
 }
