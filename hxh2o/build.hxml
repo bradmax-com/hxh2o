@@ -1,0 +1,7 @@
+-D no_debug
+-D linux
+-cp hx
+-main Main
+-cpp build
+# -D static_link
+# -debug

@@ -26,10 +26,10 @@
 #define H2O_USE_LIBUV 1
 
 #include <hxcpp.h>
-#include <../cpp/Import.h>
+#include <Import.h>
 #include <iostream>
 #include <string>
-#include <HXH2O.h>
+#include <hxh2o/HXH2O.h>
 #include <errno.h>
 #include <limits.h>
 #include <netinet/in.h>
@@ -90,7 +90,7 @@ static int main_page(h2o_handler_t *self, h2o_req_t *req){
     request.body = toHxString(req->entity);
     request.headers = toHxMap(req->headers);
 
-    Response resp = HXH2O_obj::request(request);
+    hxh2o::Response resp = hxh2o::HXH2O_obj::request(request);
 
     static h2o_generator_t generator = {NULL, NULL};
 

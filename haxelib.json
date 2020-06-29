@@ -3,9 +3,12 @@
     "license": "MIT",
     "tags": [
       "web",
-      "server"
+      "server",
+      "h2o",
+      "redis",
+      "router"
     ],
-    "classPath": "src",
+    "classPath": "src/hx",
     "contributors": [
       "bradmax.com"
     ],

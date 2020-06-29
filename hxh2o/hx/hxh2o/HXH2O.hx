@@ -1,48 +1,53 @@
-package;
+package hxh2o;
 
 @:buildXml('
-<set name="HXH2O" value="${haxelib:hxh2o}" />
-<set name="H2O" value="${HXH2O}/h2o" if="linux"/>
-<set name="H2O" value="${HXH2O}/h2o" if="macos"/>
-<echo value="_______________${HXH2O}" />
-<echo value="_______________${H2O}" />
+<set name="HXH2O" value="${haxelib:hxh2o}/hxh2o" />
+<set name="HXH2O_LIB" value="/usr/lib/haxe/lib/hxh2o/h2o" />
+<!--<set name="HXH2O_LIB" value="/usr/lib/haxe/lib/hxh2o/git/h2o" />-->
+<set name="H2O" value="${HXH2O}/h2o" />
 
 <files id="haxe">
     <flag value="-I${HXH2O}" />
 
+    <compilerflag value="-I${HXH2O_LIB}/deps/yoml/"/>
+    <!--
     <compilerflag value="-I${HXH2O}/cpp/"/>
     <compilerflag value="-I${HXH2O}/" />
     <compilerflag value="-I${H2O}/include/"/>
     <compilerflag value="-I${H2O}/deps/yoml/"/>
 
-    <compilerflag value="-I/opt/local/include/" if="macos"/>
-    <compilerflag value="-I/usr/include/" if="linux"/>
+    <compilerflag value="-I/opt/local/include/" />
+    <compilerflag value="-I/usr/include/" />
     
     <compilerflag value="-I./include"/>
     <compilerflag value="-Iinclude"/>
-    <file name="${HXH2O}/cpp/simple.cpp" if="macos"/>
-    <file name="${HXH2O}/cpp/simple.cpp" if="linux"/>
+    -->
+    <file name="${HXH2O}/cpp/simple.cpp"/>
 </files>
 
 <files id="haxe">
+    <!--
     <compilerflag value="-I${HXH2O}" />
+    -->
 </files>
 
 <files id="__main__">
     <compilerflag value="-I./include"/>
 </files>
 
-
-<target id="haxe" if="linux">
+<target id="haxe">
+    <!--
     <flag value="-Iinclude"/>
     <flag value="-I./include"/>
     <flag value="-I${H2O}/include"/>
     <flag value="-I${H2O}/deps/yoml"/>
+    <flag value="-I${HXH2O_LIB}/deps/yoml"/>
     <flag value="-I/usr/include"/>
+    -->
 
-    <flag value="-L/usr/lib/x86_64-linux-gnu/" unless="arm"/>
-    <flag value="-L/usr/lib/aarch64-linux-gnu/" if="arm"/>
+    <flag value="-L/usr/lib/x86_64-linux-gnu/"/>
     <flag value="-L${H2O}/"/>
+    <flag value="-L${HXH2O_LIB}/"/>
 
     <lib name="-ldl"/>
     <lib name="-luv"/>
@@ -50,80 +55,11 @@ package;
     <lib name="-lssl" />
     <lib name="-lcrypto" />
     <lib name="-lh2o-evloop" />
-    <lib name="-lz" />
-</target>
-
-<target id="haxe" if="macos">
-    <flag value="-Iinclude"/>
-    <flag value="-I./include"/>
-    <flag value="-I${H2O}/include"/>
-    <flag value="-I${H2O}/deps/yoml"/>
-    <flag value="-I/opt/local/include"/>
-
-    <flag value="-L/opt/local/lib/"/>
-    <flag value="-L${H2O}/"/>
-
-    <lib name="-lh2o" />
-    <lib name="-lh2o-evloop" />
-    <lib name="-ldl"/>
-    <lib name="-luv"/>
-    <lib name="-lssl" />
-    <lib name="-lcrypto" />
     <lib name="-lz" />
 </target>
 ')
 
-class Request {
-    public var path:String;
-    public var method:String;
-    public var body:String;
-    public var headers:Map<String, String>;
-    public var params:Map<String, String>;
 
-    public function new(){}
-}
-
-class Response {
-    private var map = new Map<String, String>();
-    private var keys:Array<String> = [];
-    private var index = 0;
-    private var body:haxe.io.BytesData;
-
-    public var status:Int = 404;
-    public var reason:String = "Not Found";
-
-    public function new(){}
-
-    public function setBody(b: String){
-        body = haxe.io.Bytes.ofString(b).getData();
-    }
-
-    public function setBodyBytes(b: haxe.io.Bytes){
-        body = b.getData();
-    }
-
-    public function headerGet(key:String):String{
-        return map.get(key);
-    }
-
-    public function headerSet(key:String, value:String){
-        map.set(key, value);
-    }
-    
-    public function headerNext():String{
-        return keys[index++];
-    }
-
-    public function headerHasNext():Bool{
-        return index < keys.length;
-    } 
-
-    public function headerReset(){
-        for(i in map.keys())
-            keys.push(i);
-        index = 0;
-    }
-}
 
 @:unreflective
 @:structAccess

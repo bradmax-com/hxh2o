@@ -1,7 +1,6 @@
-package;
+package hxh2o;
 
 using StringTools;
-
 
 typedef PathSolver = {
     len: Int,
@@ -21,15 +20,17 @@ class Router<I,O>{
     public function addRoute(path:String, func:Map<String, Dynamic>->I->O->Void){
         var urlEreg = new EReg(":([a-zA-Z0-9._%\\-!~.*]+)", "g");
         var matches = urlEreg.split(path).length; 
-		urlEreg.match(path);
+        urlEreg.match(path);
         var vars = [];
         try{         
             var pos = urlEreg.matchedPos();
-            vars.push(path.substr(pos.pos + 1, pos.len).replace("/",""));
-            var i = 0;
-            while(urlEreg.matchSub(path, pos.pos + pos.len) == true && i++<matches){
-                pos = urlEreg.matchedPos();
-	            vars.push(path.substr(pos.pos + 1, pos.len).replace("/",""));
+            if(pos != null){
+                vars.push(path.substr(pos.pos + 1, pos.len).replace("/",""));
+                var i = 0;
+                while(urlEreg.matchSub(path, pos.pos + pos.len) == true && i++<matches){
+                    pos = urlEreg.matchedPos();
+                    vars.push(path.substr(pos.pos + 1, pos.len).replace("/",""));
+                }
             }
             
         }catch(err:Dynamic){}

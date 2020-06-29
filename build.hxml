@@ -1,5 +1,0 @@
--D no_debug
--D linux
--cp src
--main Main
--cpp build

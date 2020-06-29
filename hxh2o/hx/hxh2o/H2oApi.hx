@@ -1,17 +1,14 @@
-package;
-
-typedef Req = HXH2O.Request;
-typedef Res = HXH2O.Response;
+package hxh2o;
 
 class H2oApi
 {
-    var router = new Router<Req,Res>();
+    var router = new Router<Request,Response>();
 
     public function new(){
         HXH2O.getInstance().registerHandler(handler);
     }
 
-    public function addRoute(path:String, func:Map<String, Dynamic>->Req->Res->Void){
+    public function addRoute(path:String, func:Map<String, Dynamic>->Request->Response->Void){
         router.addRoute(path, func);
     }
 
@@ -24,13 +21,13 @@ class H2oApi
         HXH2O.getInstance().bind(host, port, internalPort);
     }
 
-    public dynamic function unknownPath(path:String, req:Req, res:Res){
+    public dynamic function unknownPath(path:String, req:Request, res:Response){
         res.status = 500;
         res.reason = "Internal Server Error";
         res.setBody('Path "$path" not found');
     }
 
-    public function handler(req:Req, res:Res){
+    public function handler(req:Request, res:Response){
         var path:String = req.path.split("?")[0];
 
         path = path.charAt(0) == "/"
