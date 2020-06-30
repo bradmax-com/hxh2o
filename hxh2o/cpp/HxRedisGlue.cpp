@@ -19,8 +19,11 @@ String __checkError(redisContext *c){
 }
 
 HXredisReply *__command(redisContext *c, String cmd){
+    std::cout << "\n" << cmd << "1\n";
     void *res = redisCommand((redisContext *)c, cmd.__s);
+    std::cout << "\n" << cmd << "2\n";
     bool isNull = res == NULL;
+    std::cout << "\n" << cmd << "3\n";
     if(isNull){
         std::cout << "\nNULL\n";
         // return String("");

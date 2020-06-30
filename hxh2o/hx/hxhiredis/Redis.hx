@@ -160,6 +160,7 @@ class Redis {
     }
 
     public function command(cmd:String):Dynamic{
+        trace("docker command: " + cmd);
         var resPointer = __command(context, cmd);
         var res = resPointer.ref;
 
