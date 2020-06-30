@@ -55,15 +55,32 @@ RUN make install
 #  h2o
 # -----
 WORKDIR /usr/lib/haxe/lib/hxh2o
-RUN wget https://github.com/h2o/h2o/archive/v2.3.0-beta2.tar.gz
-RUN tar zxvf v2.3.0-beta2.tar.gz
-RUN rm v2.3.0-beta2.tar.gz
-RUN mv h2o-2.3.0-beta2 h2o
-
+RUN wget https://github.com/h2o/h2o/archive/v2.3.0-beta1.tar.gz
+RUN tar zxvf v2.3.0-beta1.tar.gz
+RUN rm v2.3.0-beta1.tar.gz
+RUN mv h2o-2.3.0-beta1 h2o
+# WORKDIR /usr/lib/haxe/lib/hxh2o
+# RUN wget https://github.com/h2o/h2o/archive/v2.2.6.tar.gz
+# RUN tar zxvf v2.2.6.tar.gz
+# RUN rm v2.2.6.tar.gz
+# RUN mv h2o-2.2.6 h2o
 WORKDIR /usr/lib/haxe/lib/hxh2o/h2o/
 RUN cmake -DWITH_BUNDLED_SSL=on .
 RUN make
 RUN make install
 RUN make libh2o
 WORKDIR /
+
+# -----
+#  hiredis
+# -----
+# WORKDIR /usr/lib/haxe/lib/hxh2o
+# RUN wget https://github.com/redis/hiredis/archive/v0.14.1.tar.gz
+# RUN tar zxvf v0.14.1.tar.gz
+# RUN rm v0.14.1.tar.gz
+# RUN mv hiredis-0.14.1 hiredis
+# WORKDIR /usr/lib/haxe/lib/hxh2o/hiredis/
+# RUN make
+# WORKDIR /
+
 EOF

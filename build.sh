@@ -17,6 +17,7 @@ mkdir bin
 ID=`docker run -it -d -p 12345:80 --mount type=bind,source="$(pwd)",target=/src hxh2o_dev`
 docker exec -it $ID /bin/bash -c 'echo "start" \
 && haxelib dev hxh2o /src/hxh2o \
+&& ls /usr/lib/haxe/lib/hxh2o/h2o/deps \
 && cd /src/hxh2o && haxe build.hxml \
 && mkdir libs \
 && cp /usr/lib/x86_64-linux-gnu/libuv.so.1 /src/hxh2o/libs/libuv.so.1 \

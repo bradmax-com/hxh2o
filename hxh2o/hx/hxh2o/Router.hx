@@ -19,7 +19,7 @@ class Router<I,O>{
     
     public function addRoute(path:String, func:Map<String, Dynamic>->I->O->Void){
         var urlEreg = new EReg(":([a-zA-Z0-9._%\\-!~.*]+)", "g");
-        var matches = urlEreg.split(path).length; 
+        var matches = urlEreg.split(path).length;
         urlEreg.match(path);
         var vars = [];
         try{         

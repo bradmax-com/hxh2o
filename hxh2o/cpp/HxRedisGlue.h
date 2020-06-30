@@ -1,5 +1,5 @@
 
 #include <hxcpp.h>
 #include "./../hiredis/hiredis.h"
-#include "./../cpp/Import.h"
+#include "./../cpp/HxRedisImport.h"
 

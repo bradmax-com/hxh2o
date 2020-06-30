@@ -152,6 +152,11 @@ class HXH2O
         return response;
     }
 
+    #if (haxe_ver >= 4.000)
     @:extern @:native("_hxh2o_bind")
     public static function hxh2o_bind(host:String, port:Int, internalPort:Int):Dynamic;
+    #else
+    @:extern @:native("_hxh2o_bind")
+    public static function hxh2o_bind(host:String, port:Int, internalPort:Int):Dynamic return null;
+    #end
 }

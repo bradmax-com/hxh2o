@@ -34,8 +34,7 @@ import cpp.Pointer;
     <flag value="-I${HXH2O_LIB}/deps/hiredis"/>
     <flag value="-I/usr/include"/>
 
-    <flag value="-L/usr/lib/x86_64-linux-gnu/" unless="arm"/>
-    <flag value="-L/usr/lib/aarch64-linux-gnu/" if="arm"/>
+    <flag value="-L/usr/lib/x86_64-linux-gnu/"/>
     <flag value="-L${H2O}/"/>
     <flag value="-L${HXH2O_LIB}/"/>
 
@@ -164,6 +163,10 @@ class Redis {
         var resPointer = __command(context, cmd);
         var res = resPointer.ref;
 
+        trace(cmd);
+        trace(res.type);
+        trace(res.str);
+
         if(res.error){
             throw res.str;
         }
@@ -178,14 +181,6 @@ class Redis {
 
         untyped __cpp__("__freeHXredisReply({0})", resPointer);
         return retValue;
-
-        // var c = __command(context, cmd);
-        // try{
-        //     checkError();
-        // }catch(err:Dynamic){
-        //     throw err;
-        // }
-        // return c;
     }
 
     public function appendCommand(cmd:String){
@@ -293,6 +288,8 @@ class Redis {
         return buffer.toString();
     }
 
+    #if (haxe_ver >= 4.000)
+
     @:extern
     @:native("redisReaderCreate")
     public static function __redisReaderCreate():Pointer<RedisReader>;
@@ -332,4 +329,49 @@ class Redis {
     @:extern
     @:native("redisReconnect")
     public static function __redisReconnect(c:Pointer<RedisContext>):Int;
+
+    #else
+
+    @:extern
+    @:native("redisReaderCreate")
+    public static function __redisReaderCreate():Pointer<RedisReader> return null;
+
+    @:extern
+    @:native("redisReaderFree")
+    public static function __redisReaderFree(reader:Pointer<RedisReader>):Void return null;
+
+    @:extern
+    @:native("redisReaderFeed")
+    public static function __redisReaderFeed(reader:Pointer<RedisReader>, buffer:ConstCharStar, size:Int):Void return null;
+
+    @:extern
+    @:native("__getReply")
+    public static function __getReply(c:Pointer<RedisContext>):Pointer<HXredisReply> return null;
+
+    @:extern
+    @:native("__command")
+    public static function __command(c:Pointer<RedisContext>, cmd:String):Pointer<HXredisReply> return null;
+
+    @:extern
+    @:native("__checkError")
+    public static function __checkError(c:Pointer<RedisContext>):String return null;
+
+    @:extern
+    @:native("freeReplyObject")
+    public static function __freeReplyObject(reply:RedisReplyPtr):Void return null;
+
+    @:extern
+    @:native("redisAppendCommand")
+    public static function __redisAppendCommand(context:Pointer<RedisContext>, command:ConstPointer<Char>):Int return null;
+
+    @:extern
+    @:native("redisConnect")
+    public static function __redisConnect(host:ConstPointer<Char>, port:Int):Pointer<RedisContext> return null;
+
+    @:extern
+    @:native("redisReconnect")
+    public static function __redisReconnect(c:Pointer<RedisContext>):Int return null;
+
+    #end
+
 }

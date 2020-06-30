@@ -26,3 +26,10 @@ Thumbs.db
 openssl-1.1.0f.tar.gz
 v2.3.0-beta1.tar.gz.1
 v2.3.0-beta2.tar.gz
+hxh2o/libs/libcrypto.so.1.1
+hxh2o/libs/libssl.so.1.1
+hxh2o/libs/libuv.so.1
+hxh2o_dist.tgz
+hxh2o/libs/libcrypto.so.1.1
+hxh2o/libs/libssl.so.1.1
+hxh2o/libs/libuv.so.1
