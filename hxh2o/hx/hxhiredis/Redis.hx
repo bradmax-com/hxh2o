@@ -161,14 +161,10 @@ class Redis {
     public function connect(host:String, port:Int):Void{
         var h = new sys.net.Host(host);
         this.host = h.toString();
-        // this.host = host;
         this.port = port;
-        // var h2 = new sys.net.Host(host);
-        // trace(host, h2.toString(), h.toString());
         try{
-            trace("HOST", host);
+            Sys.println('Redis host connected $host:$port');
             context = __redisConnect(StdString.ofString(host).c_str(), port);
-            // context = __redisConnect(StdString.ofString(host).c_str(), port);
             checkError();
         }catch(err:Dynamic){
             throw err;
