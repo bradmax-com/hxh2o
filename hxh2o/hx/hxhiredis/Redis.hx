@@ -8,13 +8,8 @@ import cpp.Pointer;
 
 @:buildXml('
 <set name="HXH2O" value="${haxelib:hxh2o}/hxh2o" />
-<set name="HXH2O_LIB" value="${haxelib:hxh2o}/hxh2o/h2o" />
+<set name="HXH2O_LIB" value="/usr/lib/h2o" />
 <set name="H2O" value="${HXH2O}/h2o" />
-<set name="H2O_MAIN" value="/usr/lib/h2o" />
-
-// <set name="HXH2O_LIB" value="/usr/lib/haxe/lib/hxh2o/h2o" />
-// <set name="HXH2O" value="${haxelib:hxh2o}/hxh2o" />
-// <set name="H2O" value="${HXH2O}/h2o" />
 
 <files id="haxe">
     <flag value="-I${HXH2O}" />
