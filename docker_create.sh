@@ -41,12 +41,14 @@ RUN haxelib install hxcpp
 # ---------
 #  openssl
 # ---------
-WORKDIR /usr/lib/haxe/lib/hxh2o
+# WORKDIR /usr/lib/haxe/lib/hxh2o
+WORKDIR /usr/lib
 RUN wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1d.tar.gz
 RUN tar xzvf OpenSSL_1_1_1d.tar.gz
 RUN rm OpenSSL_1_1_1d.tar.gz
 RUN mv openssl-OpenSSL_1_1_1d openssl
-WORKDIR /usr/lib/haxe/lib/hxh2o/openssl
+# WORKDIR /usr/lib/haxe/lib/hxh2o/openssl
+WORKDIR /usr/lib/openssl
 RUN ./config -Wl,--enable-new-dtags,-rpath,'$(LIBRPATH)'
 RUN make
 RUN make install
@@ -54,17 +56,14 @@ RUN make install
 # -----
 #  h2o
 # -----
-WORKDIR /usr/lib/haxe/lib/hxh2o
+# WORKDIR /usr/lib/haxe/lib/hxh2o
+WORKDIR /usr/lib
 RUN wget https://github.com/h2o/h2o/archive/v2.3.0-beta1.tar.gz
 RUN tar zxvf v2.3.0-beta1.tar.gz
 RUN rm v2.3.0-beta1.tar.gz
 RUN mv h2o-2.3.0-beta1 h2o
-# WORKDIR /usr/lib/haxe/lib/hxh2o
-# RUN wget https://github.com/h2o/h2o/archive/v2.2.6.tar.gz
-# RUN tar zxvf v2.2.6.tar.gz
-# RUN rm v2.2.6.tar.gz
-# RUN mv h2o-2.2.6 h2o
-WORKDIR /usr/lib/haxe/lib/hxh2o/h2o/
+# WORKDIR /usr/lib/haxe/lib/hxh2o/h2o/
+WORKDIR /usr/lib/h2o
 RUN cmake -DWITH_BUNDLED_SSL=on .
 RUN make
 RUN make install

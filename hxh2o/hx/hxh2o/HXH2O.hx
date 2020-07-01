@@ -2,33 +2,13 @@ package hxh2o;
 
 @:buildXml('
 <set name="HXH2O" value="${haxelib:hxh2o}/hxh2o" />
-<set name="HXH2O_LIB" value="/usr/lib/haxe/lib/hxh2o/h2o" />
-<!--<set name="HXH2O_LIB" value="/usr/lib/haxe/lib/hxh2o/git/h2o" />-->
+<set name="HXH2O_LIB" value="/usr/lib/h2o" />
 <set name="H2O" value="${HXH2O}/h2o" />
 
 <files id="haxe">
     <flag value="-I${HXH2O}" />
-
     <compilerflag value="-I${HXH2O_LIB}/deps/yoml/"/>
-    <!--
-    <compilerflag value="-I${HXH2O}/cpp/"/>
-    <compilerflag value="-I${HXH2O}/" />
-    <compilerflag value="-I${H2O}/include/"/>
-    <compilerflag value="-I${H2O}/deps/yoml/"/>
-
-    <compilerflag value="-I/opt/local/include/" />
-    <compilerflag value="-I/usr/include/" />
-    
-    <compilerflag value="-I./include"/>
-    <compilerflag value="-Iinclude"/>
-    -->
     <file name="${HXH2O}/cpp/simple.cpp"/>
-</files>
-
-<files id="haxe">
-    <!--
-    <compilerflag value="-I${HXH2O}" />
-    -->
 </files>
 
 <files id="__main__">
@@ -36,15 +16,6 @@ package hxh2o;
 </files>
 
 <target id="haxe">
-    <!--
-    <flag value="-Iinclude"/>
-    <flag value="-I./include"/>
-    <flag value="-I${H2O}/include"/>
-    <flag value="-I${H2O}/deps/yoml"/>
-    <flag value="-I${HXH2O_LIB}/deps/yoml"/>
-    <flag value="-I/usr/include"/>
-    -->
-
     <flag value="-L/usr/lib/x86_64-linux-gnu/"/>
     <flag value="-L${H2O}/"/>
     <flag value="-L${HXH2O_LIB}/"/>
