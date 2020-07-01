@@ -34,7 +34,7 @@ import cpp.Pointer;
     <flag value="-I${HXH2O_LIB}/deps/hiredis"/>
     <flag value="-I/usr/include"/>
 
-    <flag value="-L/usr/lib/x86_64-linux-gnu/"/>
+    <flag value="-L/usr/port/x866_64-port -gnu/"/>
     <flag value="-L${H2O}/"/>
     <flag value="-L${HXH2O_LIB}/"/>
 
@@ -87,6 +87,11 @@ extern class HXredisReply {
     public var element:HXredisReplyArrayAccess;
 }
 
+typedef Reply = {
+    status:Int,
+    data:Dynamic,
+}
+
 @:headerCode('
 typedef struct HXredisReply HXredisReply;
     struct HXredisReply {
@@ -106,6 +111,10 @@ typedef struct HXredisReply HXredisReply;
 @:cppInclude('../cpp/HxRedisGlue.cpp')
 
 class Redis {
+    public static inline var CONNECTION_REFUSED = "Connection refused";
+    public static inline var SERVER_CLOSED_THE_CONNECTION = "Server closed the connection";
+    public static inline var CONNECTION_RESET_BY_PEER = "Connection reset by peer";
+
     public static inline var HX_REDIS_ERR = -1;
     public static inline var HX_REDIS_OK = 0;
 
@@ -134,14 +143,32 @@ class Redis {
     var context:Pointer<RedisContext>;
     var reader:Pointer<RedisReader>;
     var reply:RedisReplyPtr;
-    var bulkSize = 0;
+    var bulkSize = 0;    
+    var host:String = null;
+    var port:Int = -1;
 
     public function new(){
     }
     
+    public function getHost():String{
+        return host;
+    }
+    
+    public function getPort():Int{
+        return port;
+    }
+
     public function connect(host:String, port:Int):Void{
-        context = __redisConnect(StdString.ofString(host).c_str(), port);
+        var h = new sys.net.Host(host);
+        this.host = h.toString();
+        // this.host = host;
+        this.port = port;
+        // var h2 = new sys.net.Host(host);
+        // trace(host, h2.toString(), h.toString());
         try{
+            trace("HOST", host);
+            context = __redisConnect(StdString.ofString(host).c_str(), port);
+            // context = __redisConnect(StdString.ofString(host).c_str(), port);
             checkError();
         }catch(err:Dynamic){
             throw err;
@@ -160,19 +187,18 @@ class Redis {
     }
 
     public function command(cmd:String):Dynamic{
-        trace("docker command: " + cmd);
         var resPointer = __command(context, cmd);
         var res = resPointer.ref;
-
-        trace(cmd);
-        trace(res.type);
-        trace(res.str);
 
         if(res.error){
             throw res.str;
         }
 
-        var retValue:Dynamic = readReplyObject(res);
+        var retValue = readReplyObject(res);
+
+        if(retValue.status == HX_REDIS_REPLY_ERROR){
+            throw retValue.data;
+        }
 
         try{
             checkError();
@@ -181,7 +207,7 @@ class Redis {
         }
 
         untyped __cpp__("__freeHXredisReply({0})", resPointer);
-        return retValue;
+        return retValue.data;
     }
 
     public function appendCommand(cmd:String){
@@ -235,17 +261,20 @@ class Redis {
         return retValue;
     }
 
-    function readReplyObject(res:HXredisReply):Dynamic{
-        trace("redis", res.type, res.str, res.integer, res.dval);
+    function readReplyObject(res:HXredisReply):Reply{
+        // trace("redis", res.type, res.str, res.integer, res.dval);
+        var data:Dynamic = null;
         switch(res.type){
             case HX_REDIS_REPLY_STRING:
-                return res.str;
+                data = res.str;
             case HX_REDIS_REPLY_INTEGER:
-                return res.integer;
+                data = res.integer;
             case HX_REDIS_REPLY_DOUBLE:
-                return res.dval;
+                data = res.dval;
             case HX_REDIS_REPLY_BOOL:
-                return res.integer == 1;
+                data = res.integer == 1;
+            case HX_REDIS_REPLY_ERROR:
+                data = res.str;
             case HX_REDIS_REPLY_ARRAY:
                 var arr:Array<Dynamic> = [];
                 for(i in 0...res.elements){
@@ -265,9 +294,9 @@ class Redis {
                             arr.push(val == 1);
                     }
                 }
-                return arr;
+                data = arr;
         }
-        return null;
+        return {data: data, status: res.type};
     }
 
     function freeReply(){

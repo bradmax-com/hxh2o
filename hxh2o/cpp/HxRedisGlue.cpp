@@ -19,24 +19,19 @@ String __checkError(redisContext *c){
 }
 
 HXredisReply *__command(redisContext *c, String cmd){
-    std::cout << "\n" << cmd << "1\n";
     void *res = redisCommand((redisContext *)c, cmd.__s);
-    std::cout << "\n" << cmd << "2\n";
     bool isNull = res == NULL;
-    std::cout << "\n" << cmd << "3\n";
+    HXredisReply *rep = new HXredisReply();
     if(isNull){
-        std::cout << "\nNULL\n";
+        rep->error = true;
+        rep->str = String::create("");
+        return rep;
         // return String("");
     }else{
         int type = ((redisReply *)res)->type;
-        std::cout << "\ntype: " << type << "\n";
-        if(type == 1){
-            std::cout << "\n" << ((redisReply *)res)->len << ":" << ((redisReply *)res)->str << "\n";
-        }
     }
     
 
-    HXredisReply *rep = new HXredisReply();
     rep->error = false;
     rep->str = String::create(((redisReply *)res)->str);
     rep->type = ((redisReply *)res)->type;

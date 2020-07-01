@@ -3,6 +3,7 @@ package;
 import hxh2o.Request;
 import hxh2o.Response;
 import hxhiredis.Redis;
+import hxhiredis.RedisCluster;
 
 class Main
 {
@@ -11,10 +12,11 @@ class Main
     }
 
     var api = new hxh2o.H2oApi();
-    var redis = new Redis();
+    var redis = new RedisCluster();
 
     public function new(){
-        redis.connect("172.31.7.94", 6379);
+        redis.connect("bradmax-redis.kelmfo.clustercfg.euc1.cache.amazonaws.com", 6379);
+        // redis.connect("172.31.7.94", 6379);
         api.addRoute("user/:id/name", userName);
         api.addRoute("user/:id", user);
         api.addRoute("redis/:key/:val", redisSet);

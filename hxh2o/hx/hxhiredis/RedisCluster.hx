@@ -18,7 +18,6 @@ typedef Node = {
 }
 
 /*
-
 ------------KNOWN-ROUTES------------
 hx/hxh2o/Router.hx:87: redis/command/:cmd
 hx/hxh2o/Router.hx:87: user/:id/name
@@ -85,51 +84,125 @@ f5c84065b306b88e8d703675a63cbc29d615b24a 172.31.5.116:6379@1122 slave 1b6d513bca
 */
 
 
-
-
-
-class RedisCluster {
-
-    private var nodes:Array<Node> = [];
-    private var connections:Map<String, Redis> = new Map();
+class RedisCluster 
+{
+    var nodes:Array<Node> = [];
+    var connections:Map<String, Redis> = new Map();
+    var connection:Redis;
 
     public function new(){}
     
-    public function connect(host:String, port:Int):Void{
+    public function connect(host:String, port:Int):Void {
+        var h = new sys.net.Host(host);
+        host = h.toString();
         var key = '$host:$port';
         if(!connections.exists(key)){
             var r = new Redis();
             r.connect(host, port);
             connections.set(key, r);
         }
+        updateCluster();
     }
 
-    public function command(cmd:String):Dynamic{
-        for(redis in connections){
-            return r.command(cmd);
-            break;
+    public function command(cmd:String):Dynamic {
+        // trace("command", cmd);
+        var redis = findInstanceByCommand(cmd);
+        // trace("redis instance", redis);
+        try{
+            return redis.command(cmd);
+        }catch(err:Dynamic){
+            if(err.indexOf("MOVED") == 0){
+                updateCluster();
+                return command(cmd);
+            }else if(checkConnectionError(err)){
+                reconnect(redis);
+                return command(cmd);
+            }else{
+                throw err;
+            }
         }
+        return null;
     }
 
     public function appendCommand(cmd:String){
-        for(redis in connections){
-            return r.appendCommand(cmd);
-            break;
+        var redis = findInstanceByCommand(cmd);
+        try{
+            redis.appendCommand(cmd);
+        }catch(err:Dynamic){
+            if(err.indexOf("MOVED") == 0){
+                updateCluster();
+                appendCommand(cmd);
+            }else if(checkConnectionError(err)){
+                reconnect(redis);
+                appendCommand(cmd);
+            }else{
+                throw err;
+            }
         }
     }
 
     public function getBulkReply():Array<String>{
         for(redis in connections){
-            return r.getBulkReply();
-            break;
+            try{
+                return redis.getBulkReply();
+                break;
+            }catch(err:Dynamic){
+                if(err.indexOf("MOVED") == 0){
+                    updateCluster();
+                    return getBulkReply();
+                }else if(checkConnectionError(err)){
+                    reconnect(redis);
+                    return getBulkReply();
+                }else{
+                    throw err;
+                }
+            }
+        }
+        return [];
+    }
+
+    function reconnect(redis:Redis){
+        try{
+            redis.reconnect();
+        }catch(err:Dynamic){
+            updateCluster();
         }
     }
 
     function updateCluster(){
+        var healthyNodeExists = false;
         for(redis in connections){
-            nodes = parseNodes(r.command("CLUSTER NODES"));
-            break;
+            try{
+                nodes = parseNodes(redis.command("CLUSTER NODES"));
+                healthyNodeExists = true;
+                break;
+            }catch(err:Dynamic){
+                trace("ERROR updateCluster:", err);
+            }
         }
+        while(!healthyNodeExists){            
+            try{
+                for(redis in connections){
+                    redis.reconnect();
+                    healthyNodeExists = true;
+                    break;
+                }
+            }catch(err:Dynamic){
+                trace('ERROR updateCluster: $err');
+            }
+        }
+    }
+
+    function checkConnectionError(err:Dynamic):Bool{
+        switch(err){
+            case Redis.CONNECTION_REFUSED:
+                return true;
+            case Redis.SERVER_CLOSED_THE_CONNECTION:
+                return true;
+            case Redis.CONNECTION_RESET_BY_PEER:
+                return true;
+        }
+        return false;
     }
 
     private function parseNodes(input:String):Array<Node>
@@ -155,7 +228,6 @@ class RedisCluster {
                     }else{
                         node.slots.push({from: Std.parseInt(range[0])});
                     }
-
                 }
                 arr.push(node);
             }catch(err:Dynamic){
@@ -166,6 +238,11 @@ class RedisCluster {
         return arr;
     }
 
+    function findInstanceByCommand(cmd:String):Redis{
+        // trace("findInstanceByCommand", cmd);
+        return findInstanceByKey(getKey(cmd));
+    }
+
     function getKey(cmd:String):String{
         var arr = cmd.split(" ");
         return arr[1];
@@ -173,20 +250,28 @@ class RedisCluster {
 
     function findInstanceByKey(key:String):Redis{
         var slot = getSlot(key);
-        for(i in nodes){
+        for(i in nodes){  
+            // trace("findInstanceByKey", nodes);
             if(isSlotInNode(slot, i)){
                 var key = '${i.host}:${i.port}';
                 if(connections.exists(key)){
+                    // trace("connections.exists", key);
                     return connections.get(key);
                 }else{
-                    return connect(i.host, i.port);
+                    var redis = new Redis();
+                    redis.connect(i.host, i.port);
+                    connections.set(key, redis);
+                    // trace("!connections.exists", key);
+                    return redis;
                 }
                 break;
             }
         }
+        return null;
     }
 
     private function isSlotInNode(slot:Int, node:Node):Bool{
+        // trace("isSlotInNode", slot, node);
         for(range in node.slots){
             if(range.to == null){
                 if(range.from == slot){
