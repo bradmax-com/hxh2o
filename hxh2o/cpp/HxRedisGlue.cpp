@@ -1,11 +1,12 @@
-#include "./HxRedisImport.h"
+#include <hxcpp.h>
+#include <HxRedisImport.h>
 #include <stdio.h>
 #include <iostream>
 #include <vector>
 
 using namespace std;
 
-String __checkError(redisContext *c){
+::String _checkError(::cpp::Pointer<redisContext> c){
     bool isNull = c == NULL;
     bool err = ((redisContext *)c)->err;
     String errstr = String::create(((redisContext *)c)->errstr, 128);
@@ -18,7 +19,7 @@ String __checkError(redisContext *c){
     }
 }
 
-HXredisReply *__command(redisContext *c, String cmd){
+::cpp::Pointer<HXredisReply> _command(::cpp::Pointer<redisContext> c, ::String cmd){
     void *res = redisCommand((redisContext *)c, cmd.__s);
     bool isNull = res == NULL;
     HXredisReply *rep = new HXredisReply();
@@ -46,7 +47,9 @@ HXredisReply *__command(redisContext *c, String cmd){
     return rep;
 }
 
-void __freeHXredisReply(struct HXredisReply *rep){
+// void _HXfreeRedisReply(struct HXredisReply *rep){
+void _HXfreeRedisReply(::cpp::Pointer<HXredisReply> r){
+    struct HXredisReply *rep = r.get_raw();
     if(rep->elements > 0){        
         int i;
         for(i = 0 ; i < rep->elements ; i++){
@@ -57,7 +60,7 @@ void __freeHXredisReply(struct HXredisReply *rep){
     free(rep);
 }
 
-HXredisReply *__getReply(redisContext *c){
+::cpp::Pointer<HXredisReply> _getReply(::cpp::Pointer<redisContext> c){
     redisReply *res;
     int status = redisGetReply((redisContext *)c, (void **)&res);
     HXredisReply *rep = new HXredisReply();

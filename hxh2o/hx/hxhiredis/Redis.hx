@@ -6,6 +6,8 @@ import cpp.Char;
 import cpp.ConstCharStar;
 import cpp.Pointer;
 
+// @:headerInclude('../cpp/HxRedisImport.h')
+// @:cppInclude('../cpp/HxRedisGlue.cpp')
 @:buildXml('
 <set name="HXH2O" value="${haxelib:hxh2o}/hxh2o" />
 <set name="HXH2O_LIB" value="/usr/lib/h2o" />
@@ -23,6 +25,9 @@ import cpp.Pointer;
     
     <compilerflag value="-I./include"/>
     <compilerflag value="-Iinclude"/>
+
+
+    <file name="${HXH2O}/cpp/HxRedisGlue.cpp"/>
 </files>
 <target id="haxe">
     <flag value="-Iinclude"/>
@@ -30,11 +35,13 @@ import cpp.Pointer;
     <flag value="-I${HH2O_MAIN2O}/include"/>
     <flag value="-I${HIREDIS}"/>
     <flag value="-I/usr/include"/>
+    <flag value="-I${HXH2O}/cpp"/>
 
     <flag value="-L/usr/port/x866_64-port -gnu/"/>
     <flag value="-L${HXH2O_LIB}/"/>
     <flag value="-L${H2O_MAIN}/"/>
     <flag value="-L${HIREDIS}/"/>
+    <flag value="-L${HXH2O}/cpp/"/>
 
     <!--<lib name="-lhiredis"/>-->
 </target>
@@ -91,22 +98,26 @@ typedef Reply = {
 }
 
 @:headerCode('
-typedef struct HXredisReply HXredisReply;
-    struct HXredisReply {
-        bool error;
-        int type;
-        int integer;
-        Float dval;
-        int len;
-        String str;
-        String vtype;
-        int elements;
-        struct HXredisReply **element;
-    };
+
+// typedef struct HXredisReply HXredisReply;
+//     struct HXredisReply {
+//         bool error;
+//         int type;
+//         int integer;
+//         Float dval;
+//         int len;
+//         String str;
+//         String vtype;
+//         int elements;
+//         struct HXredisReply **element;
+//     };
+
+#include <../cpp/HxRedisImport.h>
+
 ')
 
-@:headerInclude('../cpp/HxRedisImport.h')
-@:cppInclude('../cpp/HxRedisGlue.cpp')
+// @:headerInclude('../cpp/HxRedisImport.h')
+// @:cppInclude('../cpp/HxRedisGlue.cpp')
 
 class Redis {
     public static inline var CONNECTION_REFUSED = "Connection refused";
@@ -200,7 +211,7 @@ class Redis {
             throw err;
         }
 
-        untyped __cpp__("__freeHXredisReply({0})", resPointer);
+        untyped __cpp__("_HXfreeRedisReply({0})", resPointer);
         return retValue.data;
     }
 
@@ -251,7 +262,7 @@ class Redis {
             throw err;
         }
 
-        untyped __cpp__("__freeHXredisReply({0})", resPointer);
+        untyped __cpp__("_HXfreeRedisReply({0})", resPointer);
         return retValue;
     }
 
@@ -314,86 +325,66 @@ class Redis {
 
     #if (haxe_ver >= 4.000)
 
-    @:extern
-    @:native("redisReaderCreate")
+    @:extern @:native("redisReaderCreate")
     public static function __redisReaderCreate():Pointer<RedisReader>;
 
-    @:extern
-    @:native("redisReaderFree")
+    @:extern @:native("redisReaderFree")
     public static function __redisReaderFree(reader:Pointer<RedisReader>):Void;
 
-    @:extern
-    @:native("redisReaderFeed")
+    @:extern @:native("redisReaderFeed")
     public static function __redisReaderFeed(reader:Pointer<RedisReader>, buffer:ConstCharStar, size:Int):Void;
 
-    @:extern
-    @:native("__getReply")
+    @:extern @:native("_getReply")
     public static function __getReply(c:Pointer<RedisContext>):Pointer<HXredisReply>;
 
-    @:extern
-    @:native("__command")
+    @:extern @:native("_command")
     public static function __command(c:Pointer<RedisContext>, cmd:String):Pointer<HXredisReply>;
 
-    @:extern
-    @:native("__checkError")
+    @:extern @:native("_checkError")
     public static function __checkError(c:Pointer<RedisContext>):String;
 
-    @:extern
-    @:native("freeReplyObject")
+    @:extern @:native("freeReplyObject")
     public static function __freeReplyObject(reply:RedisReplyPtr):Void;
 
-    @:extern
-    @:native("redisAppendCommand")
+    @:extern @:native("redisAppendCommand")
     public static function __redisAppendCommand(context:Pointer<RedisContext>, command:ConstPointer<Char>):Int;
 
-    @:extern
-    @:native("redisConnect")
+    @:extern @:native("redisConnect")
     public static function __redisConnect(host:ConstPointer<Char>, port:Int):Pointer<RedisContext>;
 
-    @:extern
-    @:native("redisReconnect")
+    @:extern @:native("redisReconnect")
     public static function __redisReconnect(c:Pointer<RedisContext>):Int;
 
     #else
 
-    @:extern
-    @:native("redisReaderCreate")
+    @:extern @:native("redisReaderCreate")
     public static function __redisReaderCreate():Pointer<RedisReader> return null;
 
-    @:extern
-    @:native("redisReaderFree")
+    @:extern @:native("redisReaderFree")
     public static function __redisReaderFree(reader:Pointer<RedisReader>):Void return null;
 
-    @:extern
-    @:native("redisReaderFeed")
+    @:extern @:native("redisReaderFeed")
     public static function __redisReaderFeed(reader:Pointer<RedisReader>, buffer:ConstCharStar, size:Int):Void return null;
 
-    @:extern
-    @:native("__getReply")
+    @:extern @:native("_getReply")
     public static function __getReply(c:Pointer<RedisContext>):Pointer<HXredisReply> return null;
 
-    @:extern
-    @:native("__command")
+    @:extern @:native("_command")
     public static function __command(c:Pointer<RedisContext>, cmd:String):Pointer<HXredisReply> return null;
 
-    @:extern
-    @:native("__checkError")
+    @:extern @:native("_checkError")
     public static function __checkError(c:Pointer<RedisContext>):String return null;
 
-    @:extern
-    @:native("freeReplyObject")
+    @:extern @:native("freeReplyObject")
     public static function __freeReplyObject(reply:RedisReplyPtr):Void return null;
 
-    @:extern
-    @:native("redisAppendCommand")
+    @:extern @:native("redisAppendCommand")
     public static function __redisAppendCommand(context:Pointer<RedisContext>, command:ConstPointer<Char>):Int return null;
 
-    @:extern
-    @:native("redisConnect")
+    @:extern @:native("redisConnect")
     public static function __redisConnect(host:ConstPointer<Char>, port:Int):Pointer<RedisContext> return null;
 
-    @:extern
-    @:native("redisReconnect")
+    @:extern @:native("redisReconnect")
     public static function __redisReconnect(c:Pointer<RedisContext>):Int return null;
 
     #end

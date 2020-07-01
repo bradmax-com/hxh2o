@@ -11,7 +11,7 @@ else
       echo "close docker"
       docker stop $CONT
 fi
-# rm -rf hxh2o/build
+rm -rf hxh2o/build
 rm -rf hxh2o/libs
 mkdir bin
 ID=`docker run -it -d -p 12345:80 --mount type=bind,source="$(pwd)",target=/src hxh2o_dev`
