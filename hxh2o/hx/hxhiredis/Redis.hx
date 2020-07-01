@@ -10,6 +10,7 @@ import cpp.Pointer;
 <set name="HXH2O" value="${haxelib:hxh2o}/hxh2o" />
 <set name="HXH2O_LIB" value="${haxelib:hxh2o}/hxh2o/h2o" />
 <set name="H2O" value="${HXH2O}/h2o" />
+<set name="H2O_MAIN" value="/usr/lib/h2o" />
 
 // <set name="HXH2O_LIB" value="/usr/lib/haxe/lib/hxh2o/h2o" />
 // <set name="HXH2O" value="${haxelib:hxh2o}/hxh2o" />
@@ -21,8 +22,11 @@ import cpp.Pointer;
     <compilerflag value="-I${HXH2O}/cpp/"/>
     <compilerflag value="-I${HXH2O}/" />
     <compilerflag value="-I${H2O}/include/"/>
+    <compilerflag value="-I${H2O_MAIN}/include/"/>
     <compilerflag value="-I${H2O}/deps/hiredis/"/>
+    <compilerflag value="-I${H2O_MAIN}/deps/hiredis/"/>
     <compilerflag value="-I${HXH2O_LIB}/deps/hiredis/"/>
+    <compilerflag value="-I${H2O_MAIN}/deps/hiredis/"/>
 
     <compilerflag value="-I/opt/local/include/" />
     <compilerflag value="-I/usr/include/" />
@@ -34,13 +38,17 @@ import cpp.Pointer;
     <flag value="-Iinclude"/>
     <flag value="-I./include"/>
     <flag value="-I${H2O}/include"/>
+    <flag value="-I${HH2O_MAIN2O}/include"/>
     <flag value="-I${H2O}/deps/hiredis"/>
+    <flag value="-I${H2O_MAIN}/deps/hiredis"/>
     <flag value="-I${HXH2O_LIB}/deps/hiredis"/>
+    <flag value="-I${H2O_MAIN}/deps/hiredis"/>
     <flag value="-I/usr/include"/>
 
     <flag value="-L/usr/port/x866_64-port -gnu/"/>
     <flag value="-L${H2O}/"/>
     <flag value="-L${HXH2O_LIB}/"/>
+    <flag value="-L${H2O_MAIN}/"/>
 
     <!--<lib name="-lhiredis"/>-->
 </target>
