@@ -9,15 +9,12 @@ import cpp.Pointer;
 @:buildXml('
 <set name="HXH2O" value="${haxelib:hxh2o}/hxh2o" />
 <set name="HXH2O_LIB" value="/usr/lib/h2o" />
-<set name="H2O" value="${HXH2O}/h2o" />
 <set name="HIREDIS" value="${HXH2O_LIB}/deps/hiredis" />
 
 <files id="haxe">
     <flag value="-I${HXH2O}" />
 
     <compilerflag value="-I${HXH2O}/cpp/"/>
-    <compilerflag value="-I${HXH2O}/" />
-    <compilerflag value="-I${H2O}/include/"/>
     <compilerflag value="-I${H2O_MAIN}/include/"/>
     <compilerflag value="-I${HIREDIS}/"/>
 
@@ -30,13 +27,11 @@ import cpp.Pointer;
 <target id="haxe">
     <flag value="-Iinclude"/>
     <flag value="-I./include"/>
-    <flag value="-I${H2O}/include"/>
     <flag value="-I${HH2O_MAIN2O}/include"/>
     <flag value="-I${HIREDIS}"/>
     <flag value="-I/usr/include"/>
 
     <flag value="-L/usr/port/x866_64-port -gnu/"/>
-    <flag value="-L${H2O}/"/>
     <flag value="-L${HXH2O_LIB}/"/>
     <flag value="-L${H2O_MAIN}/"/>
     <flag value="-L${HIREDIS}/"/>
