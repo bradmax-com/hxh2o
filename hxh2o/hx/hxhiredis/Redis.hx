@@ -43,7 +43,7 @@ import cpp.Pointer;
     <flag value="-L${HIREDIS}/"/>
     <flag value="-L${HXH2O}/cpp/"/>
 
-    <!--<lib name="-lhiredis"/>-->
+    <lib name="-lhiredis"/>
 </target>
 ')
 
