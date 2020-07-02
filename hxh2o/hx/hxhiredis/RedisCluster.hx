@@ -112,9 +112,11 @@ class RedisCluster
             return redis.command(cmd);
         }catch(err:Dynamic){
             if(err.indexOf("MOVED") == 0){
+                trace("REDIS MOVED");
                 updateCluster();
                 return command(cmd);
             }else if(checkConnectionError(err)){
+                trace("REDIS CONNECTION ERROR");
                 reconnect(redis);
                 return command(cmd);
             }else{
@@ -163,6 +165,7 @@ class RedisCluster
     }
 
     function reconnect(redis:Redis){
+        trace("REDIS RECONNECT");
         try{
             redis.reconnect();
         }catch(err:Dynamic){
@@ -171,6 +174,7 @@ class RedisCluster
     }
 
     function updateCluster(){
+        trace("REDIS UPDATE CLUSTER");
         var healthyNodeExists = false;
         for(redis in connections){
             try{
