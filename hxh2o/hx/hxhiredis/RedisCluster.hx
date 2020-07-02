@@ -142,23 +142,24 @@ class RedisCluster
     }
 
     public function getBulkReply():Array<String>{
+        var res:Array<String> = [];
         for(redis in connections){
             try{
-                return redis.getBulkReply();
+                res = res.concat(redis.getBulkReply());
                 break;
             }catch(err:Dynamic){
                 if(err.indexOf("MOVED") == 0){
                     updateCluster();
-                    return getBulkReply();
+                    res = res.concat(getBulkReply());
                 }else if(checkConnectionError(err)){
                     reconnect(redis);
-                    return getBulkReply();
+                    res = res.concat(getBulkReply());
                 }else{
                     throw err;
                 }
             }
         }
-        return [];
+        return res;
     }
 
     function reconnect(redis:Redis){
