@@ -256,6 +256,10 @@ class Redis {
 
         var retValue:Dynamic = readReplyObject(res);
 
+        if(retValue.status == HX_REDIS_REPLY_ERROR){
+            throw retValue.data;
+        }
+
         try{
             checkError();
         }catch(err:Dynamic){
@@ -263,7 +267,7 @@ class Redis {
         }
 
         untyped __cpp__("_freeRedisReply({0})", resPointer);
-        return retValue;
+        return retValue.data;
     }
 
     function readReplyObject(res:HXredisReply):Reply{

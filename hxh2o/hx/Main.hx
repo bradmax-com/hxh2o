@@ -12,9 +12,44 @@ class Main
     }
 
     var api = new hxh2o.H2oApi();
-    var redis = new RedisCluster();
+    var redis = new Redis();
 
     public function new(){
+
+        var r = new Redis();
+        var connected = false;
+        try{
+            r.connect("192.168.0.123", 6379);
+            connected = true;
+        }catch(err:Dynamic){
+            trace(err);
+            connected = false;
+        }
+
+        while(true){
+            try{
+                if(connected){
+                    (r.appendCommand('SET A 1'));
+                    (r.appendCommand('GET C'));
+                    (r.appendCommand('SET B 2'));
+                    (r.appendCommand('GET B'));
+                    (r.appendCommand('SET C 3'));
+                    (r.appendCommand('GET C'));
+                    trace(r.getBulkReply());
+                }else{
+                    // r.reconnect();
+                    connected = true;
+                }
+            }catch(err:Dynamic){
+                connected = false;
+                trace(err);
+            }
+            Sys.sleep(1);
+        }
+
+
+
+
         redis.connect("bradmax-redis.kelmfo.clustercfg.euc1.cache.amazonaws.com", 6379);
         // redis.connect("172.31.7.94", 6379);
         api.addRoute("user/:id/name", userName);

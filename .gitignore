@@ -33,3 +33,4 @@ hxh2o_dist.tgz
 hxh2o/libs/libcrypto.so.1.1
 hxh2o/libs/libssl.so.1.1
 hxh2o/libs/libuv.so.1
+dump.rdb

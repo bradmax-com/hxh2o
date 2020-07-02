@@ -11,15 +11,19 @@ else
       echo "close docker"
       docker stop $CONT
 fi
+
 rm -rf hxh2o/build
 rm -rf hxh2o/libs
 mkdir bin
 ID=`docker run -it -d -p 12345:80 --mount type=bind,source="$(pwd)",target=/src hxh2o_dev`
 docker exec -it $ID /bin/bash -c 'echo "start" \
+&& cd /usr/lib/h2o/deps/hiredis \
+&& make \
 && haxelib dev hxh2o /src/hxh2o \
 && ls /usr/lib/h2o/deps \
 && cd /src/hxh2o && haxe build.hxml \
-&& mkdir libs \
+&& mkdir -p /src/hxh2o/libs \
+&& find / -name "libuv.so.1" \
 && cp /usr/lib/x86_64-linux-gnu/libuv.so.1 /src/hxh2o/libs/libuv.so.1 \
 && cp /usr/lib/x86_64-linux-gnu/libssl.so.1.1 /src/hxh2o/libs/libssl.so.1.1 \
 && cp /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 /src/hxh2o/libs/libcrypto.so.1.1 \
