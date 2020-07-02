@@ -19,11 +19,11 @@ using namespace std;
     }
 }
 
-int _redisAppendCommand(::cpp::Pointer<redisContext> c, ::String cmd){
+int _redisAppendCommand(::cpp::Pointer<redisContext> c, String cmd){
     return redisAppendCommand((redisContext *)c, cmd.__s);
 }
 
-::cpp::Pointer<HXredisReply> _command(::cpp::Pointer<redisContext> c, ::String cmd){
+::cpp::Pointer<HXredisReply> _command(::cpp::Pointer<redisContext> c, String cmd){
     void *res = redisCommand((redisContext *)c, cmd.__s);
     bool isNull = res == NULL;
     HXredisReply *rep = new HXredisReply();
@@ -103,12 +103,13 @@ void _freeRedisReply(::cpp::Pointer<HXredisReply> r){
     return rep;
 }
 
-::cpp::Pointer<redisContext> _redisConnect(::String h, int p){
+::cpp::Pointer<redisContext> _redisConnect(String h, int p){
     return redisConnect(h.__s, p);
 }
 
 int _redisReconnect(::cpp::Pointer<redisContext> c){
-    return redisReconnect(c.get_raw());
+    redisContext *ctx = (redisContext *)c.get_raw();
+    return redisReconnect(ctx);
 }
 
 void _freeReplyObject(redisReplyPtr p){
