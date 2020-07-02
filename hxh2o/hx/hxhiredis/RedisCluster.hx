@@ -132,9 +132,11 @@ class RedisCluster
             redis.appendCommand(cmd);
         }catch(err:Dynamic){
             if(err.indexOf("MOVED") == 0){
+                trace("REDIS MOVED");
                 updateCluster();
                 appendCommand(cmd);
             }else if(checkConnectionError(err)){
+                trace("REDIS CONNECTION ERROR");
                 reconnect(redis);
                 appendCommand(cmd);
             }else{
@@ -151,9 +153,11 @@ class RedisCluster
                 break;
             }catch(err:Dynamic){
                 if(err.indexOf("MOVED") == 0){
+                    trace("REDIS MOVED");
                     updateCluster();
                     res = getBulkReply();
                 }else if(checkConnectionError(err)){
+                    trace("REDIS CONNECTION ERROR");
                     reconnect(redis);
                     res = getBulkReply();
                 }else{
