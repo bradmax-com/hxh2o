@@ -150,10 +150,10 @@ class RedisCluster
             }catch(err:Dynamic){
                 if(err.indexOf("MOVED") == 0){
                     updateCluster();
-                    res = res.concat(getBulkReply());
+                    res = getBulkReply();
                 }else if(checkConnectionError(err)){
                     reconnect(redis);
-                    res = res.concat(getBulkReply());
+                    res = getBulkReply();
                 }else{
                     throw err;
                 }
