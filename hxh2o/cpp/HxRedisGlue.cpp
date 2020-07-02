@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
-#include <hiredis.h>
+#include "hiredis.h"
 
-using namespace std;
+// using namespace std;
 
 ::String _checkError(::cpp::Pointer<redisContext> c){
     bool isNull = c == NULL;
