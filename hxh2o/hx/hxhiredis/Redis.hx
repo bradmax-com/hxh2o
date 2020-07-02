@@ -173,7 +173,7 @@ class Redis {
         this.port = port;
         try{
             Sys.println('Redis host connected $host:$port');
-            context = __redisConnect(StdString.ofString(host).c_str(), port);
+            context = __redisConnect(host, port);
             checkError();
         }catch(err:Dynamic){
             throw err;
@@ -211,13 +211,13 @@ class Redis {
             throw err;
         }
 
-        untyped __cpp__("_HXfreeRedisReply({0})", resPointer);
+        untyped __cpp__("_freeRedisReply({0})", resPointer);
         return retValue.data;
     }
 
     public function appendCommand(cmd:String){
         bulkSize++;
-        __redisAppendCommand(context, StdString.ofString(cmd).c_str());
+        __redisAppendCommand(context, cmd);
         try{
             checkError();
         }catch(err:Dynamic){
@@ -262,7 +262,7 @@ class Redis {
             throw err;
         }
 
-        untyped __cpp__("_HXfreeRedisReply({0})", resPointer);
+        untyped __cpp__("_freeRedisReply({0})", resPointer);
         return retValue;
     }
 
@@ -325,13 +325,13 @@ class Redis {
 
     #if (haxe_ver >= 4.000)
 
-    @:extern @:native("redisReaderCreate")
+    @:extern @:native("_redisReaderCreate")
     public static function __redisReaderCreate():Pointer<RedisReader>;
 
-    @:extern @:native("redisReaderFree")
+    @:extern @:native("_redisReaderFree")
     public static function __redisReaderFree(reader:Pointer<RedisReader>):Void;
 
-    @:extern @:native("redisReaderFeed")
+    @:extern @:native("_redisReaderFeed")
     public static function __redisReaderFeed(reader:Pointer<RedisReader>, buffer:ConstCharStar, size:Int):Void;
 
     @:extern @:native("_getReply")
@@ -343,21 +343,21 @@ class Redis {
     @:extern @:native("_checkError")
     public static function __checkError(c:Pointer<RedisContext>):String;
 
-    @:extern @:native("freeReplyObject")
+    @:extern @:native("_freeReplyObject")
     public static function __freeReplyObject(reply:RedisReplyPtr):Void;
 
-    @:extern @:native("redisAppendCommand")
-    public static function __redisAppendCommand(context:Pointer<RedisContext>, command:ConstPointer<Char>):Int;
+    @:extern @:native("_redisAppendCommand")
+    public static function __redisAppendCommand(context:Pointer<RedisContext>, command:String):Int;
 
-    @:extern @:native("redisConnect")
-    public static function __redisConnect(host:ConstPointer<Char>, port:Int):Pointer<RedisContext>;
+    @:extern @:native("_redisConnect")
+    public static function __redisConnect(host:String, port:Int):Pointer<RedisContext>;
 
-    @:extern @:native("redisReconnect")
+    @:extern @:native("_redisReconnect")
     public static function __redisReconnect(c:Pointer<RedisContext>):Int;
 
     #else
 
-    @:extern @:native("redisReaderCreate")
+    @:extern @:native("_redisReaderCreate")
     public static function __redisReaderCreate():Pointer<RedisReader> return null;
 
     @:extern @:native("redisReaderFree")

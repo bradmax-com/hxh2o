@@ -19,6 +19,10 @@ using namespace std;
     }
 }
 
+int _redisAppendCommand(::cpp::Pointer<redisContext> c, ::String cmd){
+    return redisAppendCommand((redisContext *)c, cmd.__s);
+}
+
 ::cpp::Pointer<HXredisReply> _command(::cpp::Pointer<redisContext> c, ::String cmd){
     void *res = redisCommand((redisContext *)c, cmd.__s);
     bool isNull = res == NULL;
@@ -47,8 +51,7 @@ using namespace std;
     return rep;
 }
 
-// void _HXfreeRedisReply(struct HXredisReply *rep){
-void _HXfreeRedisReply(::cpp::Pointer<HXredisReply> r){
+void _freeRedisReply(::cpp::Pointer<HXredisReply> r){
     struct HXredisReply *rep = r.get_raw();
     if(rep->elements > 0){        
         int i;
@@ -98,4 +101,28 @@ void _HXfreeRedisReply(::cpp::Pointer<HXredisReply> r){
     
     freeReplyObject(res);
     return rep;
+}
+
+::cpp::Pointer<redisContext> _redisConnect(::String h, int p){
+    return redisConnect(h.__s, p);
+}
+
+int _redisReconnect(::cpp::Pointer<redisContext> c){
+    return redisReconnect(c.get_raw());
+}
+
+void _freeReplyObject(redisReplyPtr p){
+    freeReplyObject(p);
+}
+
+::cpp::Pointer<redisReader> _redisReaderCreate(){
+    return redisReaderCreate();
+}
+
+void _redisReaderFree(::cpp::Pointer<redisReader> r){
+    redisReaderFree(r.get_raw());
+}
+
+void _redisReaderFeed(::cpp::Pointer<redisReader> r, const char* b, int s){
+    redisReaderFeed(r.get_raw(), b, s);
 }
