@@ -217,7 +217,6 @@ class Redis {
 
     public function appendCommand(cmd:String){
         bulkSize++;
-        trace("appendCommand", cmd);
         __redisAppendCommand(context, cmd);
         try{
             checkError();
