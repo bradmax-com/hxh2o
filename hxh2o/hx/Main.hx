@@ -19,7 +19,7 @@ class Main
         var r = new Redis();
         var connected = false;
         try{
-            r.connect("192.168.0.123", 6379);
+            r.connect("192.168.10.2", 6379);
             connected = true;
         }catch(err:Dynamic){
             trace(err);
@@ -29,13 +29,21 @@ class Main
         while(true){
             try{
                 if(connected){
-                    (r.appendCommand('SET A 1'));
-                    (r.appendCommand('GET C'));
-                    (r.appendCommand('SET B 2'));
-                    (r.appendCommand('GET B'));
-                    (r.appendCommand('SET C 3'));
-                    (r.appendCommand('GET C'));
-                    trace(r.getBulkReply());
+                    // trace("add");
+                    // r.command('SADD clients a');
+                    // r.command('SADD clients b');
+                    // r.command('SADD clients c');
+                    // r.command('SADD clients d');
+                    trace("members");
+                    var response = r.command('SMEMBERS clients');
+                    trace(response);
+                    // trace(r.command('SET A 1'));
+                    // trace(r.command('GET C'));
+                    // trace(r.command('SET B 2'));
+                    // trace(r.command('GET B'));
+                    // trace(r.command('SET C 3'));
+                    // trace(r.command('GET C'));
+                    // trace(r.getBulkReply());
                 }else{
                     // r.reconnect();
                     connected = true;

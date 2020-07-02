@@ -5,7 +5,7 @@
 #include <vector>
 #include "hiredis.h"
 
-// using namespace std;
+using namespace std;
 
 ::String _checkError(::cpp::Pointer<redisContext> c){
     bool isNull = c == NULL;
@@ -25,7 +25,9 @@ int _redisAppendCommand(cpp::Pointer<redisContext> c, String cmd){
 }
 
 cpp::Pointer<HXredisReply> _command(cpp::Pointer<redisContext> c, String cmd){
-    void *res = redisCommand((redisContext *)c.get_raw(), cmd.__s);
+    // std::cout << "\nCOMMAND: " << cmd.__s << "\n";
+    redisReply *res = (redisReply *)redisCommand((redisContext *)c.get_raw(), cmd.__s);
+    // std::cout << "\nCOMMAND DONE: " << cmd.__s << "\n";
     bool isNull = res == NULL;
     HXredisReply *rep = new HXredisReply();
     if(isNull){
@@ -35,6 +37,8 @@ cpp::Pointer<HXredisReply> _command(cpp::Pointer<redisContext> c, String cmd){
         // return String("");
     }else{
         int type = ((redisReply *)res)->type;
+        // std::cout << "\nTYPE: " << type << "\n";
+        // std::cout << "\nSTR: " << ((redisReply *)res)->str << "\n";
     }
     
 
@@ -47,6 +51,22 @@ cpp::Pointer<HXredisReply> _command(cpp::Pointer<redisContext> c, String cmd){
     // rep->vtype = ((redisReply *)res)->vtype;
     rep->elements = ((redisReply *)res)->elements;
     
+    if(rep->elements > 0){
+        rep->element = (struct HXredisReply **)calloc(rep->elements, sizeof(struct HXredisReply *));
+        
+        int i;
+        for(i = 0 ; i < rep->elements ; i++){
+            rep->element[i] = (struct HXredisReply *)malloc(sizeof(struct HXredisReply));
+            rep->element[i]->error = false;
+            rep->element[i]->str = String::create(res->element[i]->str);
+            rep->element[i]->type = res->element[i]->type;
+            rep->element[i]->integer = ((redisReply *)res)->element[i]->integer;
+            // rep->element[i]->dval = ((redisReply *)res)->element[i]->dval;
+            rep->element[i]->len = ((redisReply *)res)->element[i]->len;
+            // rep->element[i]->vtype = ((redisReply *)res)->element[i]->vtype;
+        }
+    }
+
     // String response = String::create(((redisReply *)res)->str);
     freeReplyObject(res);
     return rep;

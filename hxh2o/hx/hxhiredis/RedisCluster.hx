@@ -105,9 +105,9 @@ class RedisCluster
     }
 
     public function command(cmd:String):Dynamic {
-        // trace("command", cmd);
+        trace("command", cmd);
         var redis = findInstanceByCommand(cmd);
-        // trace("redis instance", redis);
+        trace("redis instance", redis);
         try{
             return redis.command(cmd);
         }catch(err:Dynamic){
