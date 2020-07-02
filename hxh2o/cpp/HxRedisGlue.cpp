@@ -20,109 +20,133 @@ using namespace std;
     }
 }
 
-int _redisAppendCommand(cpp::Pointer<redisContext> c, String cmd){
-    return redisAppendCommand((redisContext *)c.get_raw(), cmd.__s);
-}
-
-cpp::Pointer<HXredisReply> _command(cpp::Pointer<redisContext> c, String cmd){
-    // std::cout << "\nCOMMAND: " << cmd.__s << "\n";
-    redisReply *res = (redisReply *)redisCommand((redisContext *)c.get_raw(), cmd.__s);
-    // std::cout << "\nCOMMAND DONE: " << cmd.__s << "\n";
+::cpp::Pointer<HXredisReply> _parseReply(redisReply *res, bool root){
     bool isNull = res == NULL;
     HXredisReply *rep = new HXredisReply();
-    if(isNull){
-        rep->error = true;
-        rep->str = String::create("");
-        return rep;
-        // return String("");
-    }else{
-        int type = ((redisReply *)res)->type;
-        // std::cout << "\nTYPE: " << type << "\n";
-        // std::cout << "\nSTR: " << ((redisReply *)res)->str << "\n";
-    }
-    
 
     rep->error = false;
     rep->str = String::create(((redisReply *)res)->str);
     rep->type = ((redisReply *)res)->type;
     rep->integer = ((redisReply *)res)->integer;
-    // rep->dval = ((redisReply *)res)->dval;
     rep->len = ((redisReply *)res)->len;
-    // rep->vtype = ((redisReply *)res)->vtype;
     rep->elements = ((redisReply *)res)->elements;
-    
+
+
     if(rep->elements > 0){
         rep->element = (struct HXredisReply **)calloc(rep->elements, sizeof(struct HXredisReply *));
         
         int i;
         for(i = 0 ; i < rep->elements ; i++){
-            rep->element[i] = (struct HXredisReply *)malloc(sizeof(struct HXredisReply));
-            rep->element[i]->error = false;
-            rep->element[i]->str = String::create(res->element[i]->str);
-            rep->element[i]->type = res->element[i]->type;
-            rep->element[i]->integer = ((redisReply *)res)->element[i]->integer;
-            // rep->element[i]->dval = ((redisReply *)res)->element[i]->dval;
-            rep->element[i]->len = ((redisReply *)res)->element[i]->len;
-            // rep->element[i]->vtype = ((redisReply *)res)->element[i]->vtype;
+            rep->element[i] = _parseReply(res->element[i], false);
         }
     }
 
+    if(root == true) freeReplyObject(res);
+
+    return rep;
+}
+
+int _redisAppendCommand(cpp::Pointer<redisContext> c, String cmd){
+    return redisAppendCommand((redisContext *)c.get_raw(), cmd.__s);
+}
+
+cpp::Pointer<HXredisReply> _command(cpp::Pointer<redisContext> c, String cmd){
+    redisReply *res = (redisReply *)redisCommand((redisContext *)c.get_raw(), cmd.__s);
+    bool isNull = res == NULL;
+    if(isNull){
+        HXredisReply *err = new HXredisReply();
+        err->error = true;
+        err->str = String::create("");
+        return err;
+    }
+    
+    HXredisReply *rep = _parseReply(res, true);
+
+    // rep->error = false;
+    // rep->str = String::create(((redisReply *)res)->str);
+    // rep->type = ((redisReply *)res)->type;
+    // rep->integer = ((redisReply *)res)->integer;
+    // // rep->dval = ((redisReply *)res)->dval;
+    // rep->len = ((redisReply *)res)->len;
+    // // rep->vtype = ((redisReply *)res)->vtype;
+    // rep->elements = ((redisReply *)res)->elements;
+    
+    // if(rep->elements > 0){
+    //     rep->element = (struct HXredisReply **)calloc(rep->elements, sizeof(struct HXredisReply *));
+        
+    //     int i;
+    //     for(i = 0 ; i < rep->elements ; i++){
+    //         rep->element[i] = (struct HXredisReply *)malloc(sizeof(struct HXredisReply));
+    //         rep->element[i]->error = false;
+    //         rep->element[i]->str = String::create(res->element[i]->str);
+    //         rep->element[i]->type = res->element[i]->type;
+    //         rep->element[i]->integer = ((redisReply *)res)->element[i]->integer;
+    //         // rep->element[i]->dval = ((redisReply *)res)->element[i]->dval;
+    //         rep->element[i]->len = ((redisReply *)res)->element[i]->len;
+    //         // rep->element[i]->vtype = ((redisReply *)res)->element[i]->vtype;
+    //     }
+    // }
+
     // String response = String::create(((redisReply *)res)->str);
-    freeReplyObject(res);
+    // freeReplyObject(res);
     return rep;
 }
 
 void _freeRedisReply(::cpp::Pointer<HXredisReply> r){
+    return;
     struct HXredisReply *rep = r.get_raw();
-    if(rep->elements > 0){        
-        int i;
-        for(i = 0 ; i < rep->elements ; i++){
-            free(rep->element[i]);
-        }
-        free(rep->element);
-    }
+    // if(rep->elements > 0){        
+    //     int i;
+    //     for(i = 0 ; i < rep->elements ; i++){
+    //         free(rep->element[i]);
+    //     }
+    //     free(rep->element);
+    // }
     free(rep);
 }
 
 ::cpp::Pointer<HXredisReply> _getReply(::cpp::Pointer<redisContext> c){
     redisReply *res;
     int status = redisGetReply((redisContext *)c, (void **)&res);
-    HXredisReply *rep = new HXredisReply();
     if(status == -1){
+        HXredisReply *rep = new HXredisReply();
         rep->error = true;
         rep->str = String("Redis connection error");
         // freeReplyObject(res);
         return rep;
     }
 
-    rep->error = false;
-    rep->str = String::create(((redisReply *)res)->str);
-    rep->type = ((redisReply *)res)->type;
-    rep->integer = ((redisReply *)res)->integer;
-    // rep->dval = ((redisReply *)res)->dval;
-    rep->len = ((redisReply *)res)->len;
-    // rep->vtype = ((redisReply *)res)->vtype;
-    rep->elements = ((redisReply *)res)->elements;
+    HXredisReply *rep = _parseReply(res, true);
 
-    if(rep->elements > 0){
-        rep->element = (struct HXredisReply **)calloc(rep->elements, sizeof(struct HXredisReply *));
+    // rep->error = false;
+    // rep->str = String::create(((redisReply *)res)->str);
+    // rep->type = ((redisReply *)res)->type;
+    // rep->integer = ((redisReply *)res)->integer;
+    // // rep->dval = ((redisReply *)res)->dval;
+    // rep->len = ((redisReply *)res)->len;
+    // // rep->vtype = ((redisReply *)res)->vtype;
+    // rep->elements = ((redisReply *)res)->elements;
+
+    // if(rep->elements > 0){
+    //     rep->element = (struct HXredisReply **)calloc(rep->elements, sizeof(struct HXredisReply *));
         
-        int i;
-        for(i = 0 ; i < rep->elements ; i++){
-            rep->element[i] = (struct HXredisReply *)malloc(sizeof(struct HXredisReply));
-            rep->element[i]->error = false;
-            rep->element[i]->str = String::create(res->element[i]->str);
-            rep->element[i]->type = res->element[i]->type;
-            rep->element[i]->integer = ((redisReply *)res)->element[i]->integer;
-            // rep->element[i]->dval = ((redisReply *)res)->element[i]->dval;
-            rep->element[i]->len = ((redisReply *)res)->element[i]->len;
-            // rep->element[i]->vtype = ((redisReply *)res)->element[i]->vtype;
-        }
-    }
+    //     int i;
+    //     for(i = 0 ; i < rep->elements ; i++){
+    //         rep->element[i] = (struct HXredisReply *)malloc(sizeof(struct HXredisReply));
+    //         rep->element[i]->error = false;
+    //         rep->element[i]->str = String::create(res->element[i]->str);
+    //         rep->element[i]->type = res->element[i]->type;
+    //         rep->element[i]->integer = ((redisReply *)res)->element[i]->integer;
+    //         // rep->element[i]->dval = ((redisReply *)res)->element[i]->dval;
+    //         rep->element[i]->len = ((redisReply *)res)->element[i]->len;
+    //         // rep->element[i]->vtype = ((redisReply *)res)->element[i]->vtype;
+    //     }
+    // }
     
-    freeReplyObject(res);
+    // freeReplyObject(res);
     return rep;
 }
+
 
 ::cpp::Pointer<redisContext> _redisConnect(String h, int p){
     return redisConnect(h.__s, p);

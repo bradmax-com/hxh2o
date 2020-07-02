@@ -199,7 +199,7 @@ class Redis {
     }
 
     public function appendCommand(cmd:String){
-        // bulkSize++;
+        bulkSize++;
         __redisAppendCommand(context, cmd);
         try{
             checkError();
@@ -211,14 +211,12 @@ class Redis {
     public function getBulkReply():Array<String>{
         var arr = new Array<String>();
 
-        while(true){
+        while(bulkSize-- > 0){
             var rep:Dynamic = cast getReply();
             if(rep != null)
-                arr.push(rep)
-            else
-                return arr;
+                arr.push(rep);
         }
-        // bulkSize = 0;
+        bulkSize = 0;
         return arr;
     }
 
