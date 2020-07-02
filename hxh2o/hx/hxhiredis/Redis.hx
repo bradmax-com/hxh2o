@@ -98,26 +98,9 @@ typedef Reply = {
 }
 
 @:headerCode('
-
-// typedef struct HXredisReply HXredisReply;
-//     struct HXredisReply {
-//         bool error;
-//         int type;
-//         int integer;
-//         Float dval;
-//         int len;
-//         String str;
-//         String vtype;
-//         int elements;
-//         struct HXredisReply **element;
-//     };
-
 #include <../cpp/HxRedisImport.h>
-
 ')
 
-// @:headerInclude('../cpp/HxRedisImport.h')
-// @:cppInclude('../cpp/HxRedisGlue.cpp')
 
 class Redis {
     public static inline var CONNECTION_REFUSED = "Connection refused";
@@ -216,7 +199,7 @@ class Redis {
     }
 
     public function appendCommand(cmd:String){
-        bulkSize++;
+        // bulkSize++;
         __redisAppendCommand(context, cmd);
         try{
             checkError();
@@ -228,12 +211,14 @@ class Redis {
     public function getBulkReply():Array<String>{
         var arr = new Array<String>();
 
-        while(bulkSize-- > 0){
+        while(true){
             var rep:Dynamic = cast getReply();
             if(rep != null)
-                arr.push(rep);
+                arr.push(rep)
+            else
+                return arr;
         }
-        bulkSize = 0;
+        // bulkSize = 0;
         return arr;
     }
 
