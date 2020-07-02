@@ -37,7 +37,7 @@ import cpp.Pointer;
     <flag value="-I/usr/include"/>
     <flag value="-I${HXH2O}/cpp"/>
 
-    <flag value="-L/usr/port/x866_64-port -gnu/"/>
+    <flag value="-L/usr/lib/x86_64-linux-gnu/"/>
     <flag value="-L${HXH2O_LIB}/"/>
     <flag value="-L${H2O_MAIN}/"/>
     <flag value="-L${HIREDIS}/"/>
