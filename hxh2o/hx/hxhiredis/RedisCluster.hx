@@ -95,7 +95,7 @@ class RedisCluster
             var indexes = bulkOrder.get(redis);
             var bulk = redis.getBulkReply();
             for(i in indexes){
-                res[index] = bulk[i];
+                res[i] = bulk[i];
             }
         }
 
