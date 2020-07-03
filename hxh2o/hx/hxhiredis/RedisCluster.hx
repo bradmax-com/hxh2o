@@ -82,7 +82,7 @@ class RedisCluster
         for(redis in connections){
             try{
                 res = res.concat(redis.getBulkReply());
-                break;
+                // break;
             }catch(err:Dynamic){
                 if(err.indexOf("MOVED") == 0){
                     trace("REDIS MOVED");
@@ -205,7 +205,7 @@ class RedisCluster
                     // trace("!connections.exists", key);
                     return redis;
                 }
-                break;
+                // break;
             }
         }
         return null;

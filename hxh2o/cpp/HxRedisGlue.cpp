@@ -61,34 +61,7 @@ cpp::Pointer<HXredisReply> _command(cpp::Pointer<redisContext> c, String cmd){
     }
     
     HXredisReply *rep = _parseReply(res, true);
-
-    // rep->error = false;
-    // rep->str = String::create(((redisReply *)res)->str);
-    // rep->type = ((redisReply *)res)->type;
-    // rep->integer = ((redisReply *)res)->integer;
-    // // rep->dval = ((redisReply *)res)->dval;
-    // rep->len = ((redisReply *)res)->len;
-    // // rep->vtype = ((redisReply *)res)->vtype;
-    // rep->elements = ((redisReply *)res)->elements;
     
-    // if(rep->elements > 0){
-    //     rep->element = (struct HXredisReply **)calloc(rep->elements, sizeof(struct HXredisReply *));
-        
-    //     int i;
-    //     for(i = 0 ; i < rep->elements ; i++){
-    //         rep->element[i] = (struct HXredisReply *)malloc(sizeof(struct HXredisReply));
-    //         rep->element[i]->error = false;
-    //         rep->element[i]->str = String::create(res->element[i]->str);
-    //         rep->element[i]->type = res->element[i]->type;
-    //         rep->element[i]->integer = ((redisReply *)res)->element[i]->integer;
-    //         // rep->element[i]->dval = ((redisReply *)res)->element[i]->dval;
-    //         rep->element[i]->len = ((redisReply *)res)->element[i]->len;
-    //         // rep->element[i]->vtype = ((redisReply *)res)->element[i]->vtype;
-    //     }
-    // }
-
-    // String response = String::create(((redisReply *)res)->str);
-    // freeReplyObject(res);
     return rep;
 }
 
@@ -117,33 +90,7 @@ void _freeRedisReply(::cpp::Pointer<HXredisReply> r){
     }
 
     HXredisReply *rep = _parseReply(res, true);
-
-    // rep->error = false;
-    // rep->str = String::create(((redisReply *)res)->str);
-    // rep->type = ((redisReply *)res)->type;
-    // rep->integer = ((redisReply *)res)->integer;
-    // // rep->dval = ((redisReply *)res)->dval;
-    // rep->len = ((redisReply *)res)->len;
-    // // rep->vtype = ((redisReply *)res)->vtype;
-    // rep->elements = ((redisReply *)res)->elements;
-
-    // if(rep->elements > 0){
-    //     rep->element = (struct HXredisReply **)calloc(rep->elements, sizeof(struct HXredisReply *));
-        
-    //     int i;
-    //     for(i = 0 ; i < rep->elements ; i++){
-    //         rep->element[i] = (struct HXredisReply *)malloc(sizeof(struct HXredisReply));
-    //         rep->element[i]->error = false;
-    //         rep->element[i]->str = String::create(res->element[i]->str);
-    //         rep->element[i]->type = res->element[i]->type;
-    //         rep->element[i]->integer = ((redisReply *)res)->element[i]->integer;
-    //         // rep->element[i]->dval = ((redisReply *)res)->element[i]->dval;
-    //         rep->element[i]->len = ((redisReply *)res)->element[i]->len;
-    //         // rep->element[i]->vtype = ((redisReply *)res)->element[i]->vtype;
-    //     }
-    // }
     
-    // freeReplyObject(res);
     return rep;
 }
 
