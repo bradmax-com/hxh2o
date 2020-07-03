@@ -91,11 +91,10 @@ class RedisCluster
         }
 
         var res:Array<Dynamic> = [];
-        for(redis in redises){
-            var indexes = bulkOrder.get(redis);
+        for(redis=>indexes in bulkOrder){
             var bulk = redis.getBulkReply();
-            for(i in indexes){
-                res[i] = bulk[i];
+            for(i in 0...indexes.length){
+                res[indexes[i]] = bulk[i];
             }
         }
 
