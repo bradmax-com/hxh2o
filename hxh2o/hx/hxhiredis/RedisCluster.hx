@@ -23,6 +23,8 @@ class RedisCluster
     var nodes:Array<Node> = [];
     var connections:Map<String, Redis> = new Map();
     var connection:Redis;
+    var bulkOrder:Map<Redis, Array<Int>> = new Map();
+    var bulkIndex = 0;
 
     public function new(){}
     
@@ -60,6 +62,11 @@ class RedisCluster
 
     public function appendCommand(cmd:String){
         var redis = findInstanceByCommand(cmd);
+        if(!bulkOrder.exists(redis))
+            bulkOrder.set(redis, []);
+        bulkOrder.get(redis).push(bulkIndex);
+        bulkIndex++;
+
         try{
             redis.appendCommand(cmd);
         }catch(err:Dynamic){
@@ -77,27 +84,45 @@ class RedisCluster
         }
     }
 
-    public function getBulkReply():Array<String>{
-        var res:Array<String> = [];
-        for(redis in connections){
-            try{
-                res = res.concat(redis.getBulkReply());
-                // break;
-            }catch(err:Dynamic){
-                if(err.indexOf("MOVED") == 0){
-                    trace("REDIS MOVED");
-                    updateCluster();
-                    res = getBulkReply();
-                }else if(checkConnectionError(err)){
-                    trace("REDIS CONNECTION ERROR");
-                    reconnect(redis);
-                    res = getBulkReply();
-                }else{
-                    throw err;
-                }
+    public function getBulkReply():Array<Dynamic>{
+        var redises = new Array<Redis>();
+        for(n in nodes){
+            redises.push(connections.get('${n.host}:${n.port}'));
+        }
+
+        var res:Array<Dynamic> = [];
+        for(redis in redises){
+            var indexes = bulkOrder.get(redis);
+            var bulk = redis.getBulkReply();
+            for(i in indexes){
+                res[index] = bulk[i];
             }
         }
+
+        bulkOrder = new Map();
+        bulkIndex = 0;
         return res;
+
+        // var res:Array<String> = [];
+        // for(redis in connections){
+        //     try{
+        //         res = res.concat(redis.getBulkReply());
+        //         // break;
+        //     }catch(err:Dynamic){
+        //         if(err.indexOf("MOVED") == 0){
+        //             trace("REDIS MOVED");
+        //             updateCluster();
+        //             res = getBulkReply();
+        //         }else if(checkConnectionError(err)){
+        //             trace("REDIS CONNECTION ERROR");
+        //             reconnect(redis);
+        //             res = getBulkReply();
+        //         }else{
+        //             throw err;
+        //         }
+        //     }
+        // }
+        // return res;
     }
 
     function reconnect(redis:Redis){

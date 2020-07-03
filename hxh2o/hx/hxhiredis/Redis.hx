@@ -208,8 +208,8 @@ class Redis {
         }
     }
 
-    public function getBulkReply():Array<String>{
-        var arr = new Array<String>();
+    public function getBulkReply():Array<Dynamic>{
+        var arr = new Array<Dynamic>();
 
         while(bulkSize-- > 0){
             var rep:Dynamic = cast getReply();

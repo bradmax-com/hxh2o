@@ -66,16 +66,6 @@ cpp::Pointer<HXredisReply> _command(cpp::Pointer<redisContext> c, String cmd){
 }
 
 void _freeRedisReply(::cpp::Pointer<HXredisReply> r){
-    return;
-    struct HXredisReply *rep = r.get_raw();
-    // if(rep->elements > 0){        
-    //     int i;
-    //     for(i = 0 ; i < rep->elements ; i++){
-    //         free(rep->element[i]);
-    //     }
-    //     free(rep->element);
-    // }
-    free(rep);
 }
 
 ::cpp::Pointer<HXredisReply> _getReply(::cpp::Pointer<redisContext> c){
