@@ -40,6 +40,26 @@ class RedisCluster
         updateCluster();
     }
 
+    public function commandArgv(cmdArr:Array<Dynamic>):Dynamic{
+        var redis = findInstanceByCommand(cmdArr[1]);
+        try{
+            return redis.commandArgv(cmdArr);
+        }catch(err:Dynamic){
+            if(err.indexOf("MOVED") == 0){
+                trace("REDIS MOVED");
+                updateCluster();
+                return commandArgv(cmdArr);
+            }else if(checkConnectionError(err)){
+                trace("REDIS CONNECTION ERROR");
+                reconnect(redis);
+                return commandArgv(cmdArr);
+            }else{
+                throw err;
+            }
+        }
+        return null;
+    }
+
     public function command(cmd:String):Dynamic {
         var redis = findInstanceByCommand(cmd);
         try{
