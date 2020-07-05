@@ -174,6 +174,32 @@ class Redis {
         }
     }
 
+    public function commandArgv(cmdArr:Array<Dynamic>):Dynamic{
+        var strArr:Array<String> = [for(i in cmdArr) ""+i];
+        var lenArr:Array<Int> = [for(i in strArr) i.length];
+        var resPointer = __redisCommandArgv(context, strArr.length, strArr, lenArr);
+        var res = resPointer.ref;
+
+        if(res.error){
+            throw res.str;
+        }
+
+        var retValue = readReplyObject(res);
+
+        if(retValue.status == HX_REDIS_REPLY_ERROR){
+            throw retValue.data;
+        }
+
+        try{
+            checkError();
+        }catch(err:Dynamic){
+            throw err;
+        }
+
+        untyped __cpp__("_freeRedisReply({0})", resPointer);
+        return retValue.data;
+    }
+
     public function command(cmd:String):Dynamic{
         var resPointer = __command(context, cmd);
         var res = resPointer.ref;
@@ -326,6 +352,9 @@ class Redis {
 
     @:extern @:native("_command")
     public static function __command(c:Pointer<RedisContext>, cmd:String):Pointer<HXredisReply>;
+    
+    @:extern @:native("_redisCommandArgv")
+    public static function __redisCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<String>, lenArr:Array<Int>):Pointer<HXredisReply>;
 
     @:extern @:native("_checkError")
     public static function __checkError(c:Pointer<RedisContext>):String;

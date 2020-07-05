@@ -31,7 +31,6 @@ using namespace std;
     rep->len = ((redisReply *)res)->len;
     rep->elements = ((redisReply *)res)->elements;
 
-
     if(rep->elements > 0){
         rep->element = (struct HXredisReply **)calloc(rep->elements, sizeof(struct HXredisReply *));
         
@@ -48,6 +47,31 @@ using namespace std;
 
 int _redisAppendCommand(cpp::Pointer<redisContext> c, String cmd){
     return redisAppendCommand((redisContext *)c.get_raw(), cmd.__s);
+}
+
+cpp::Pointer<HXredisReply> _redisCommandArgv(cpp::Pointer<redisContext> c, int len, Array<String> strArr, Array<int> lenArr){
+    int i = 0;
+    int max = strArr.__length();
+    vector<const char *> argv;
+    vector<size_t> argvlen;
+
+    for(i=0 ; i < max ; i++){
+        argv.push_back( strArr->__get(i).__s );
+        argvlen.push_back( strArr->__get(i).length );
+    }
+
+    redisReply *res = (redisReply *) redisCommandArgv((redisContext *)c.get_raw(), len, &(argv[0]), &(argvlen[0]));
+    bool isNull = res == NULL;
+    if(isNull){
+        HXredisReply *err = new HXredisReply();
+        err->error = true;
+        err->str = String::create("");
+        return err;
+    }
+    
+    HXredisReply *rep = _parseReply(res, true);
+    
+    return rep;
 }
 
 cpp::Pointer<HXredisReply> _command(cpp::Pointer<redisContext> c, String cmd){

@@ -36,7 +36,9 @@ class Main
                     // r.command('SADD clients d');
                     trace("members");
                     var response = r.command('SMEMBERS clients');
-                    trace(response);
+                    trace("command", response);
+                    var response = r.commandArgv(['SMEMBERS', 'clients']);
+                    trace("commandArgv", response);
                     // trace(r.command('SET A 1'));
                     // trace(r.command('GET C'));
                     // trace(r.command('SET B 2'));
