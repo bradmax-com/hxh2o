@@ -80,6 +80,31 @@ class RedisCluster
         return null;
     }
 
+    public function appendCommandArgv(cmdArr:Array<Dynamic>):Dynamic{
+        var redis = findInstanceByCommand(cmdArr[1]);
+        if(!bulkOrder.exists(redis))
+            bulkOrder.set(redis, []);
+        bulkOrder.get(redis).push(bulkIndex);
+        bulkIndex++;
+        
+        try{
+            redis.appendCommandArgv(cmdArr);
+        }catch(err:Dynamic){
+            if(err.indexOf("MOVED") == 0){
+                trace("REDIS MOVED");
+                updateCluster();
+                appendCommandArgv(cmdArr);
+            }else if(checkConnectionError(err)){
+                trace("REDIS CONNECTION ERROR");
+                reconnect(redis);
+                appendCommandArgv(cmdArr);
+            }else{
+                throw err;
+            }
+        }
+        return null;
+    }
+
     public function appendCommand(cmd:String){
         var redis = findInstanceByCommand(cmd);
         if(!bulkOrder.exists(redis))

@@ -49,6 +49,20 @@ int _redisAppendCommand(cpp::Pointer<redisContext> c, String cmd){
     return redisAppendCommand((redisContext *)c.get_raw(), cmd.__s);
 }
 
+int _redisAppendCommandArgv(cpp::Pointer<redisContext> c, int len, Array<String> strArr, Array<int> lenArr){
+    int i = 0;
+    int max = strArr.__length();
+    vector<const char *> argv;
+    vector<size_t> argvlen;
+
+    for(i=0 ; i < max ; i++){
+        argv.push_back( strArr->__get(i).__s );
+        argvlen.push_back( strArr->__get(i).length );
+    }
+
+    return redisAppendCommandArgv((redisContext *)c.get_raw(), len, &(argv[0]), &(argvlen[0]));
+}
+
 cpp::Pointer<HXredisReply> _redisCommandArgv(cpp::Pointer<redisContext> c, int len, Array<String> strArr, Array<int> lenArr){
     int i = 0;
     int max = strArr.__length();

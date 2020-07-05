@@ -224,6 +224,18 @@ class Redis {
         return retValue.data;
     }
 
+    public function appendCommandArgv(cmdArr:Array<Dynamic>){
+        bulkSize++;
+        var strArr:Array<String> = [for(i in cmdArr) ""+i];
+        var lenArr:Array<Int> = [for(i in strArr) i.length];
+        __redisAppendCommandArgv(context, strArr.length, strArr, lenArr);
+        try{
+            checkError();
+        }catch(err:Dynamic){
+            throw err;
+        }
+    }
+
     public function appendCommand(cmd:String){
         bulkSize++;
         __redisAppendCommand(context, cmd);
@@ -355,6 +367,9 @@ class Redis {
     
     @:extern @:native("_redisCommandArgv")
     public static function __redisCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<String>, lenArr:Array<Int>):Pointer<HXredisReply>;
+
+    @:extern @:native("_redisAppendCommandArgv")
+    public static function __redisAppendCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<String>, lenArr:Array<Int>):Int;
 
     @:extern @:native("_checkError")
     public static function __checkError(c:Pointer<RedisContext>):String;

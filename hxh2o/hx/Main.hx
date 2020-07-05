@@ -39,6 +39,8 @@ class Main
                     trace("command", response);
                     var response = r.commandArgv(['SMEMBERS', 'clients']);
                     trace("commandArgv", response);
+                    r.appendCommandArgv(['SMEMBERS', 'clients']);
+                    trace("appendCommandArgv", r.getBulkReply());
                     // trace(r.command('SET A 1'));
                     // trace(r.command('GET C'));
                     // trace(r.command('SET B 2'));
