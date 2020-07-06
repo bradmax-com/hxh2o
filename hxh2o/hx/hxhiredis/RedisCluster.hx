@@ -41,7 +41,7 @@ class RedisCluster
     }
 
     public function commandArgv(cmdArr:Array<Dynamic>):Dynamic{
-        var redis = findInstanceByCommand(cmdArr[1]);
+        var redis = findInstanceByKey(cmdArr[1]);
         try{
             return redis.commandArgv(cmdArr);
         }catch(err:Dynamic){
@@ -81,12 +81,12 @@ class RedisCluster
     }
 
     public function appendCommandArgv(cmdArr:Array<Dynamic>):Dynamic{
-        var redis = findInstanceByCommand(cmdArr[1]);
+        var redis = findInstanceByKey(""+cmdArr[1]);
         if(!bulkOrder.exists(redis))
             bulkOrder.set(redis, []);
         bulkOrder.get(redis).push(bulkIndex);
         bulkIndex++;
-        
+
         try{
             redis.appendCommandArgv(cmdArr);
         }catch(err:Dynamic){
