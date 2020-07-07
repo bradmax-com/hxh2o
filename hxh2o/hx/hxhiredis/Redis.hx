@@ -180,7 +180,8 @@ class Redis {
 
 
         var strArr:Array<String> = [for(i in cmdArr) ""+i];
-        var lenArr:Array<Int> = [for(i in strArr) Bytes.ofString(i).length];
+        // var lenArr:Array<Int> = [for(i in strArr) Bytes.ofString(i).length];
+        var lenArr:Array<Int> = [for(i in strArr) i.length];
         var resPointer = __redisCommandArgv(context, strArr.length, strArr, lenArr);
         var res = resPointer.ref;
 

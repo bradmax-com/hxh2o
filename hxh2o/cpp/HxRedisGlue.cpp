@@ -71,7 +71,12 @@ cpp::Pointer<HXredisReply> _redisCommandArgv(cpp::Pointer<redisContext> c, int l
     for(i=0 ; i < len ; i++){
         argv.push_back( strArr->__get(i).c_str() );
         argvlen.push_back(lenArr->__get(i));
-        std::cout << lenArr->__get(i) << ": " << strArr->__get(i).c_str() << "\n";
+        if(lenArr->__get(i) > 100){
+            std::cout << lenArr->__get(i) << "\n";
+        }
+        else{
+            std::cout << lenArr->__get(i) << ": " << strArr->__get(i).c_str() << "\n";
+        }
     }
 
     redisReply *res = (redisReply *) redisCommandArgv((redisContext *)c.get_raw(), len, &(argv[0]), &(argvlen[0]));
