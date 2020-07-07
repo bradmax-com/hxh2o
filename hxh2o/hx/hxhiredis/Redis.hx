@@ -1,10 +1,11 @@
 package hxhiredis;
 
+import cpp.ConstPointer;
+import cpp.StdString;
 import cpp.Char;
 import cpp.ConstCharStar;
-import cpp.ConstPointer;
 import cpp.Pointer;
-import cpp.StdString;
+import haxe.io.Bytes;
 
 // @:headerInclude('../cpp/HxRedisImport.h')
 // @:cppInclude('../cpp/HxRedisGlue.cpp')
@@ -175,11 +176,12 @@ class Redis {
     }
 
     public function commandArgv(cmdArr:Array<Dynamic>):Dynamic{
+
+
+
         var strArr:Array<String> = [for(i in cmdArr) ""+i];
-        // var strArr:Array<String> = [for(i in cmdArr) ""+i];
-        var chrArr:Array<ConstCharStar> = [for(i in strArr) ConstCharStar.fromString(i)];
-        var lenArr:Array<Int> = [for(i in strArr) i.length];
-        var resPointer = __redisCommandArgv(context, chrArr.length, chrArr, lenArr);
+        var lenArr:Array<Int> = [for(i in strArr) Bytes.ofString(i).length];
+        var resPointer = __redisCommandArgv(context, strArr.length, strArr, lenArr);
         var res = resPointer.ref;
 
         if(res.error){
@@ -368,7 +370,7 @@ class Redis {
     public static function __command(c:Pointer<RedisContext>, cmd:String):Pointer<HXredisReply>;
     
     @:extern @:native("_redisCommandArgv")
-    public static function __redisCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<ConstCharStar>, lenArr:Array<Int>):Pointer<HXredisReply>;
+    public static function __redisCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<String>, lenArr:Array<Int>):Pointer<HXredisReply>;
 
     @:extern @:native("_redisAppendCommandArgv")
     public static function __redisAppendCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<String>, lenArr:Array<Int>):Int;
