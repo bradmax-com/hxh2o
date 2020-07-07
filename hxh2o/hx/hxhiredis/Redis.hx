@@ -292,7 +292,7 @@ class Redis {
     }
 
     function readReplyObject(res:HXredisReply):Reply{
-        // trace("redis", res.type, res.str, res.integer, res.dval);
+        trace("redis", res.type, res.str, res.integer, res.dval);
         var data:Dynamic = null;
         switch(res.type){
             case HX_REDIS_REPLY_STRING:
