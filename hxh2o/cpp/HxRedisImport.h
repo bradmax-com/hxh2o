@@ -17,8 +17,8 @@ typedef struct HXredisReply HXredisReply;
     };
 
 HXCPP_EXTERN_CLASS_ATTRIBUTES cpp::Pointer<HXredisReply> _command(cpp::Pointer<redisContext> c, String str);
-HXCPP_EXTERN_CLASS_ATTRIBUTES cpp::Pointer<HXredisReply> _redisCommandArgv(cpp::Pointer<redisContext> c, int len, Array<String> strArr, Array<int> lenArr);
-HXCPP_EXTERN_CLASS_ATTRIBUTES int _redisAppendCommandArgv(cpp::Pointer<redisContext> c, int len, Array<String> strArr, Array<int> lenArr);
+HXCPP_EXTERN_CLASS_ATTRIBUTES cpp::Pointer<HXredisReply> _redisCommandArgv(cpp::Pointer<redisContext> c, int len, Array<Array<cpp::UInt8>> strArr, Array<int> lenArr);
+HXCPP_EXTERN_CLASS_ATTRIBUTES int _redisAppendCommandArgv(cpp::Pointer<redisContext> c, int len, Array<Array<cpp::UInt8>> strArr, Array<int> lenArr);
 HXCPP_EXTERN_CLASS_ATTRIBUTES void _freeRedisReply(::cpp::Pointer<HXredisReply> c);
 HXCPP_EXTERN_CLASS_ATTRIBUTES String _checkError(::cpp::Pointer<redisContext> c);
 HXCPP_EXTERN_CLASS_ATTRIBUTES ::cpp::Pointer<HXredisReply> _getReply(::cpp::Pointer<redisContext> c);

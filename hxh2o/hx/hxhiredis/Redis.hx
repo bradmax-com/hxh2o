@@ -6,6 +6,7 @@ import cpp.Char;
 import cpp.ConstCharStar;
 import cpp.Pointer;
 import haxe.io.Bytes;
+import haxe.io.BytesData;
 
 // @:headerInclude('../cpp/HxRedisImport.h')
 // @:cppInclude('../cpp/HxRedisGlue.cpp')
@@ -176,12 +177,18 @@ class Redis {
     }
 
     public function commandArgv(cmdArr:Array<Dynamic>):Dynamic{
-
-
-
-        var strArr:Array<String> = [for(i in cmdArr) ""+i];
-        // var lenArr:Array<Int> = [for(i in strArr) Bytes.ofString(i).length];
-        var lenArr:Array<Int> = [for(i in strArr) i.length];
+        var lenArr:Array<Int> = [];
+        var strArr:Array<BytesData> = [];
+        for(i in cmdArr){
+            if(Std.isOfType(i, Bytes)){
+                lenArr.push(i.length);
+                var bytes:Bytes = cast i;
+                strArr.push(bytes.getData());
+            }else{
+                lenArr.push((""+i).length);
+                strArr.push(Bytes.ofString(""+i).getData());
+            }
+        }
         var resPointer = __redisCommandArgv(context, strArr.length, strArr, lenArr);
         var res = resPointer.ref;
 
@@ -231,8 +238,18 @@ class Redis {
 
     public function appendCommandArgv(cmdArr:Array<Dynamic>){
         bulkSize++;
-        var strArr:Array<String> = [for(i in cmdArr) ""+i];
-        var lenArr:Array<Int> = [for(i in strArr) i.length];
+        var lenArr:Array<Int> = [];
+        var strArr:Array<BytesData> = [];
+        for(i in cmdArr){
+            if(Std.isOfType(i, Bytes)){
+                lenArr.push(i.length);
+                var bytes:Bytes = cast i;
+                strArr.push(bytes.getData());
+            }else{
+                lenArr.push((""+i).length);
+                strArr.push(Bytes.ofString(""+i).getData());
+            }
+        }
         __redisAppendCommandArgv(context, strArr.length, strArr, lenArr);
         try{
             checkError();
@@ -297,7 +314,7 @@ class Redis {
     }
 
     function readReplyObject(res:HXredisReply):Reply{
-        trace("redis", res.type, res.str, res.integer, res.dval);
+        // trace("redis", res.type, res.str, res.integer, res.dval);
         var data:Dynamic = null;
         switch(res.type){
             case HX_REDIS_REPLY_STRING:
@@ -371,10 +388,10 @@ class Redis {
     public static function __command(c:Pointer<RedisContext>, cmd:String):Pointer<HXredisReply>;
     
     @:extern @:native("_redisCommandArgv")
-    public static function __redisCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<String>, lenArr:Array<Int>):Pointer<HXredisReply>;
+    public static function __redisCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<BytesData>, lenArr:Array<Int>):Pointer<HXredisReply>;
 
     @:extern @:native("_redisAppendCommandArgv")
-    public static function __redisAppendCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<String>, lenArr:Array<Int>):Int;
+    public static function __redisAppendCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<BytesData>, lenArr:Array<Int>):Int;
 
     @:extern @:native("_checkError")
     public static function __checkError(c:Pointer<RedisContext>):String;

@@ -49,34 +49,25 @@ int _redisAppendCommand(cpp::Pointer<redisContext> c, String cmd){
     return redisAppendCommand((redisContext *)c.get_raw(), cmd.__s);
 }
 
-int _redisAppendCommandArgv(cpp::Pointer<redisContext> c, int len, Array<String> strArr, Array<int> lenArr){
+int _redisAppendCommandArgv(cpp::Pointer<redisContext> c, int len, Array<Array<cpp::UInt8>> strArr, Array<int> lenArr){
     int i = 0;
-    int max = strArr.__length();
     vector<const char *> argv;
     vector<size_t> argvlen;
-
-    for(i=0 ; i < max ; i++){
-        argv.push_back( strArr->__get(i).__s );
-        argvlen.push_back( strArr->__get(i).length );
+    for(i=0 ; i < len ; i++){
+        argv.push_back( strArr->__get(i)->getBase() );
+        argvlen.push_back(lenArr->__get(i));
     }
 
     return redisAppendCommandArgv((redisContext *)c.get_raw(), len, &(argv[0]), &(argvlen[0]));
 }
 
-cpp::Pointer<HXredisReply> _redisCommandArgv(cpp::Pointer<redisContext> c, int len, Array<String> strArr, Array<int> lenArr){
+cpp::Pointer<HXredisReply> _redisCommandArgv(cpp::Pointer<redisContext> c, int len, Array<Array<cpp::UInt8>> strArr, Array<int> lenArr){
     int i = 0;
     vector<const char *> argv;
     vector<size_t> argvlen;
-    std::cout << "\nSTART\n";
     for(i=0 ; i < len ; i++){
-        argv.push_back( strArr->__get(i).c_str() );
+        argv.push_back( strArr->__get(i)->getBase() );
         argvlen.push_back(lenArr->__get(i));
-        if(lenArr->__get(i) > 100){
-            std::cout << lenArr->__get(i) << "\n";
-        }
-        else{
-            std::cout << lenArr->__get(i) << ": " << strArr->__get(i).c_str() << "\n";
-        }
     }
 
     redisReply *res = (redisReply *) redisCommandArgv((redisContext *)c.get_raw(), len, &(argv[0]), &(argvlen[0]));

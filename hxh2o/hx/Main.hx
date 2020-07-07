@@ -1,5 +1,6 @@
 package;
 
+import haxe.io.BytesBuffer;
 import hxh2o.Request;
 import hxh2o.Response;
 import hxhiredis.Redis;
@@ -19,6 +20,7 @@ class Main
         var r = new Redis();
         var connected = false;
         try{
+            // r.connect("192.168.0.123", 6379);
             r.connect("192.168.10.2", 6379);
             connected = true;
         }catch(err:Dynamic){
@@ -29,25 +31,37 @@ class Main
         while(true){
             try{
                 if(connected){
-                    // trace("add");
-                    // r.command('SADD clients a');
-                    // r.command('SADD clients b');
-                    // r.command('SADD clients c');
-                    // r.command('SADD clients d');
-                    trace("members");
-                    var response = r.command('SMEMBERS clients');
-                    trace("command", response);
-                    var response = r.commandArgv(['SMEMBERS', 'clients']);
-                    trace("commandArgv", response);
-                    r.appendCommandArgv(['SMEMBERS', 'clients']);
-                    trace("appendCommandArgv", r.getBulkReply());
-                    // trace(r.command('SET A 1'));
-                    // trace(r.command('GET C'));
-                    // trace(r.command('SET B 2'));
-                    // trace(r.command('GET B'));
-                    // trace(r.command('SET C 3'));
-                    // trace(r.command('GET C'));
-                    // trace(r.getBulkReply());
+                    trace("======================>>>> :)");
+                    
+                    var data = new haxe.io.BytesBuffer();
+                    data.addByte(88);
+                    data.addByte(88);
+                    data.addByte(88);
+                    for(i in 0...1024){
+                        data.addByte(i%128);
+                    }
+                    data.addByte(88);
+                    data.addByte(88);
+                    data.addByte(88);
+                    var bytes = data.getBytes();
+                    trace("binary");
+                    var response = r.commandArgv(['SET', 'data128', bytes]);
+
+
+                    var data = new haxe.io.BytesBuffer();
+                    data.addByte(88);
+                    data.addByte(88);
+                    data.addByte(88);
+                    for(i in 0...1024){
+                        data.addByte(i%256);
+                    }
+                    data.addByte(88);
+                    data.addByte(88);
+                    data.addByte(88);
+
+                    trace("binary");
+                    var bytes = data.getBytes();
+                    var response = r.commandArgv(['SET', 'data256', bytes]);
                 }else{
                     // r.reconnect();
                     connected = true;
