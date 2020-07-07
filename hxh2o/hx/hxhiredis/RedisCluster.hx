@@ -40,7 +40,7 @@ class RedisCluster
         updateCluster();
     }
 
-    public function commandArgv(cmdArr:Array<Dynamic>):Dynamic{
+    public function commandArgv(cmdArr:Array<String>):Dynamic{
         var redis = findInstanceByKey(cmdArr[1]);
         try{
             return redis.commandArgv(cmdArr);
@@ -136,7 +136,11 @@ class RedisCluster
         }
 
         var res:Array<Dynamic> = [];
-        for(redis=>indexes in bulkOrder){
+        var keys = bulkOrder.keys();
+        // for(redis=>indexes in bulkOrder){
+        for(key in keys){
+            var redis = key;
+            var indexes = bulkOrder.get(key);
             var bulk = redis.getBulkReply();
             for(i in 0...indexes.length){
                 res[indexes[i]] = bulk[i];

@@ -1,6 +1,7 @@
 package;
 
 import haxe.io.BytesBuffer;
+import haxe.io.Bytes;
 import hxh2o.Request;
 import hxh2o.Response;
 import hxhiredis.Redis;
@@ -28,6 +29,23 @@ class Main
             connected = false;
         }
 
+        // var data = new haxe.io.BytesBuffer();
+        // data.addByte(88);
+        // data.addByte(88);
+        // data.addByte(88);
+        // for(i in 0...1024){
+        //     data.addByte(i%256);
+        // }
+        // data.addByte(88);
+        // data.addByte(88);
+        // data.addByte(88);
+        // var bytes0 = data.getBytes();
+        // var str1 = bytes0.toString();
+        // var bytes1 = Bytes.ofString(str1);
+
+        // trace(bytes0.length, bytes1.length);
+        
+        // return;
         while(true){
             try{
                 if(connected){
@@ -38,30 +56,17 @@ class Main
                     data.addByte(88);
                     data.addByte(88);
                     for(i in 0...1024){
-                        data.addByte(i%128);
-                    }
-                    data.addByte(88);
-                    data.addByte(88);
-                    data.addByte(88);
-                    var bytes = data.getBytes();
-                    trace("binary");
-                    var response = r.commandArgv(['SET', 'data128', bytes]);
-
-
-                    var data = new haxe.io.BytesBuffer();
-                    data.addByte(88);
-                    data.addByte(88);
-                    data.addByte(88);
-                    for(i in 0...1024){
                         data.addByte(i%256);
                     }
                     data.addByte(88);
                     data.addByte(88);
                     data.addByte(88);
-
                     trace("binary");
                     var bytes = data.getBytes();
-                    var response = r.commandArgv(['SET', 'data256', bytes]);
+                    trace(bytes.length);
+                    r.commandArgv(['SET', 'data256', bytes.toString()]);
+                    var response = r.commandArgv(['GET', 'data256']);
+                    trace(Bytes.ofString(response).length);
                 }else{
                     // r.reconnect();
                     connected = true;

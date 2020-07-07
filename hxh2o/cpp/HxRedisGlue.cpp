@@ -25,10 +25,10 @@ using namespace std;
     HXredisReply *rep = new HXredisReply();
 
     rep->error = false;
+    rep->len = ((redisReply *)res)->len;
     rep->str = String::create(((redisReply *)res)->str);
     rep->type = ((redisReply *)res)->type;
     rep->integer = ((redisReply *)res)->integer;
-    rep->len = ((redisReply *)res)->len;
     rep->elements = ((redisReply *)res)->elements;
 
     if(rep->elements > 0){

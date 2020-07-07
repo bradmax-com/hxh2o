@@ -176,17 +176,23 @@ class Redis {
         }
     }
 
-    public function commandArgv(cmdArr:Array<Dynamic>):Dynamic{
+    public function commandArgv(cmdArr:Array<String>):Dynamic{
         var lenArr:Array<Int> = [];
         var strArr:Array<BytesData> = [];
         for(i in cmdArr){
+            #if (haxe_ver >= 4.000)
             if(Std.isOfType(i, Bytes)){
+            #else
+            if(Std.is(i, Bytes)){
+            #end
                 lenArr.push(i.length);
                 var bytes:Bytes = cast i;
                 strArr.push(bytes.getData());
             }else{
-                lenArr.push((""+i).length);
-                strArr.push(Bytes.ofString(""+i).getData());
+                var bytes = Bytes.ofString(i);
+                trace(bytes.length);
+                lenArr.push(bytes.length);
+                strArr.push(bytes.getData());
             }
         }
         var resPointer = __redisCommandArgv(context, strArr.length, strArr, lenArr);
@@ -241,7 +247,11 @@ class Redis {
         var lenArr:Array<Int> = [];
         var strArr:Array<BytesData> = [];
         for(i in cmdArr){
+            #if (haxe_ver >= 4.000)
             if(Std.isOfType(i, Bytes)){
+            #else
+            if(Std.is(i, Bytes)){
+            #end
                 lenArr.push(i.length);
                 var bytes:Bytes = cast i;
                 strArr.push(bytes.getData());
@@ -424,18 +434,24 @@ class Redis {
 
     @:extern @:native("_command")
     public static function __command(c:Pointer<RedisContext>, cmd:String):Pointer<HXredisReply> return null;
+    
+    @:extern @:native("_redisCommandArgv")
+    public static function __redisCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<BytesData>, lenArr:Array<Int>):Pointer<HXredisReply> return null;
+
+    @:extern @:native("_redisAppendCommandArgv")
+    public static function __redisAppendCommandArgv(c:Pointer<RedisContext>, len:Int, strArr:Array<BytesData>, lenArr:Array<Int>):Int return null;
 
     @:extern @:native("_checkError")
     public static function __checkError(c:Pointer<RedisContext>):String return null;
 
-    @:extern @:native("freeReplyObject")
+    @:extern @:native("_freeReplyObject")
     public static function __freeReplyObject(reply:RedisReplyPtr):Void return null;
 
-    @:extern @:native("redisAppendCommand")
-    public static function __redisAppendCommand(context:Pointer<RedisContext>, command:ConstPointer<Char>):Int return null;
+    @:extern @:native("_redisAppendCommand")
+    public static function __redisAppendCommand(context:Pointer<RedisContext>, command:String):Int return null;
 
     @:extern @:native("redisConnect")
-    public static function __redisConnect(host:ConstPointer<Char>, port:Int):Pointer<RedisContext> return null;
+    public static function __redisConnect(host:String, port:Int):Pointer<RedisContext> return null;
 
     @:extern @:native("redisReconnect")
     public static function __redisReconnect(c:Pointer<RedisContext>):Int return null;
