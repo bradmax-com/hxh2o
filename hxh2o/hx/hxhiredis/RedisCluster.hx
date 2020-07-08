@@ -62,6 +62,8 @@ class RedisCluster
 
     public function command(cmd:String):Dynamic {
         var redis = findInstanceByCommand(cmd);
+        if(redis == null)
+            throw "Redis node not found";
         try{
             return redis.command(cmd);
         }catch(err:Dynamic){
