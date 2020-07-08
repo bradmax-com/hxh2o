@@ -200,8 +200,8 @@ class RedisCluster
                         hash: "",
                         host: rootHost,
                         port: rootPort,
-                        slots:[{from: 0, to: 16384}]]
-                    };
+                        slots:[{from: 0, to: 16384}]
+                    }];
                 healthyNodeExists = true;
                 break;
             }catch(err:Dynamic){
