@@ -190,7 +190,6 @@ class Redis {
                 strArr.push(bytes.getData());
             }else{
                 var bytes = Bytes.ofString(i);
-                trace(bytes.length);
                 lenArr.push(bytes.length);
                 strArr.push(bytes.getData());
             }
@@ -221,9 +220,7 @@ class Redis {
     public function command(cmd:String):Dynamic{
         if(context == null)
             throw "Redis not connected";
-        trace(cmd, "res start");
         var resPointer = __command(context, cmd);
-        trace(cmd, "res end");
         var res = resPointer.ref;
         
         if(res.error){
