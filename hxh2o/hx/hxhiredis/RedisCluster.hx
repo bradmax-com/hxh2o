@@ -26,7 +26,7 @@ class RedisCluster
     var bulkOrder:Map<Redis, Array<Int>> = new Map();
     var bulkIndex = 0;
     var rootHost:String;
-    var rootPort:String;
+    var rootPort:Int;
 
     public function new(){}
     
