@@ -221,17 +221,15 @@ class Redis {
     public function command(cmd:String):Dynamic{
         if(context == null)
             throw "Redis not connected";
+        trace(cmd, "res start");
         var resPointer = __command(context, cmd);
-        trace(cmd, resPointer != null);
-        trace(cmd, resPointer.ref != null);
-        var res = resPointer.ref;
+        trace(cmd, "res end");
         
         if(res.error){
             throw res.str;
         }
 
         var retValue = readReplyObject(res);
-        trace(cmd, retValue != null);
         if(retValue.status == HX_REDIS_REPLY_ERROR){
             throw retValue.data;
         }
