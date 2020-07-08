@@ -224,6 +224,7 @@ class Redis {
         trace(cmd, "res start");
         var resPointer = __command(context, cmd);
         trace(cmd, "res end");
+        var res = resPointer.ref;
         
         if(res.error){
             throw res.str;
