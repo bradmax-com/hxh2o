@@ -223,13 +223,13 @@ class Redis {
             throw "Redis not connected";
         var resPointer = __command(context, cmd);
         var res = resPointer.ref;
-
+        trace(cmd, resPointer, res);
         if(res.error){
             throw res.str;
         }
 
         var retValue = readReplyObject(res);
-
+        trace(retValue);
         if(retValue.status == HX_REDIS_REPLY_ERROR){
             throw retValue.data;
         }
