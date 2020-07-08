@@ -195,17 +195,20 @@ class RedisCluster
             try{
                 nodes = parseNodes(redis.command("CLUSTER NODES"));
                 trace("NODES: ", nodes);
-                if(nodes == null || nodes.length == 0)
-                    nodes = [{
-                        hash: "",
-                        host: rootHost,
-                        port: rootPort,
-                        slots:[{from: 0, to: 16384}]
-                    }];
-                healthyNodeExists = true;
                 break;
             }catch(err:Dynamic){
-                trace("ERROR updateCluster:", err);
+                if((""+err).indexOf("cluster support disabled") > -1){
+                    if(nodes == null || nodes.length == 0)
+                        nodes = [{
+                            hash: "",
+                            host: rootHost,
+                            port: rootPort,
+                            slots:[{from: 0, to: 16384}]
+                        }];
+                    healthyNodeExists = true;
+                }else{
+                    trace("ERROR updateCluster:", err);
+                }
             }
         }
         while(!healthyNodeExists){            
