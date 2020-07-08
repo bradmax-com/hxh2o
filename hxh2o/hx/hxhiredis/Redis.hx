@@ -157,9 +157,9 @@ class Redis {
         this.host = h.toString();
         this.port = port;
         try{
-            Sys.println('Redis host connected $host:$port');
             context = __redisConnect(host, port);
             checkError();
+            Sys.println('Redis host connected $host:$port');
         }catch(err:Dynamic){
             throw err;
         }
