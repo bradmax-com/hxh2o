@@ -29,21 +29,7 @@ class Main
             connected = false;
         }
 
-        // var data = new haxe.io.BytesBuffer();
-        // data.addByte(88);
-        // data.addByte(88);
-        // data.addByte(88);
-        // for(i in 0...1024){
-        //     data.addByte(i%256);
-        // }
-        // data.addByte(88);
-        // data.addByte(88);
-        // data.addByte(88);
-        // var bytes0 = data.getBytes();
-        // var str1 = bytes0.toString();
-        // var bytes1 = Bytes.ofString(str1);
-
-        // trace(bytes0.length, bytes1.length);
+        // var data = new haxe.io.BytesBuf 
         
         // return;
         while(true){

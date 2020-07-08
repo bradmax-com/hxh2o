@@ -219,6 +219,8 @@ class Redis {
     }
 
     public function command(cmd:String):Dynamic{
+        if(context == null)
+            throw "Redis not connected";
         var resPointer = __command(context, cmd);
         var res = resPointer.ref;
 
