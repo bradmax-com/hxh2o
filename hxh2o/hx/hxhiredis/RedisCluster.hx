@@ -25,12 +25,16 @@ class RedisCluster
     var connection:Redis;
     var bulkOrder:Map<Redis, Array<Int>> = new Map();
     var bulkIndex = 0;
+    var rootHost:String;
+    var rootPort:String;
 
     public function new(){}
     
     public function connect(host:String, port:Int):Void {
         var h = new sys.net.Host(host);
         host = h.toString();
+        rootHost = host;
+        rootPort = port;
         var key = '$host:$port';
         if(!connections.exists(key)){
             var r = new Redis();
@@ -190,6 +194,14 @@ class RedisCluster
         for(redis in connections){
             try{
                 nodes = parseNodes(redis.command("CLUSTER NODES"));
+                trace("NODES: ", nodes);
+                if(nodes == null || nodes.length == 0)
+                    nodes = [{
+                        hash: "",
+                        host: rootHost,
+                        port: rootPort,
+                        slots:[{from: 0, to: 16384}]]
+                    };
                 healthyNodeExists = true;
                 break;
             }catch(err:Dynamic){
