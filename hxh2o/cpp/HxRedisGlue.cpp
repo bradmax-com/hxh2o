@@ -26,7 +26,7 @@ using namespace std;
 
     rep->error = false;
     rep->len = ((redisReply *)res)->len;
-    rep->str = String::create(((redisReply *)res)->str);
+    rep->str = String::create(((redisReply *)res)->str, rep->len);
     rep->type = ((redisReply *)res)->type;
     rep->integer = ((redisReply *)res)->integer;
     rep->elements = ((redisReply *)res)->elements;
