@@ -8,7 +8,7 @@ package hxh2o;
 <files id="haxe">
     <flag value="-I${HXH2O}" />
     <compilerflag value="-I${HXH2O_LIB}/deps/yoml/"/>
-    <file name="${HXH2O}/cpp/Hxh2OGlue.cpp"/>
+    <file name="${HXH2O}/cpp/HxH2OGlue.cpp"/>
 </files>
 
 <files id="__main__">
