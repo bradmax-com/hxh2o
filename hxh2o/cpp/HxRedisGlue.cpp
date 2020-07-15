@@ -20,7 +20,18 @@ using namespace std;
     }
 }
 
-::cpp::Pointer<HXredisReply> _parseReply(redisReply *res, bool root){
+void _freeRedisReply(HXredisReply *hxReply){
+    if(hxReply->elements > 0){
+        int i;
+        for(i = 0 ; i < hxReply->elements ; i++){
+            _freeRedisReply(hxReply->element[i]);
+        }
+        free(hxReply->element);
+    }
+    delete hxReply;
+}
+
+HXredisReply * _parseReply(redisReply *res, bool root){
     bool isNull = res == NULL;
     HXredisReply *rep = new HXredisReply();
 
@@ -97,9 +108,6 @@ cpp::Pointer<HXredisReply> _command(cpp::Pointer<redisContext> c, String cmd){
     HXredisReply *rep = _parseReply(res, true);
     
     return rep;
-}
-
-void _freeRedisReply(::cpp::Pointer<HXredisReply> r){
 }
 
 ::cpp::Pointer<HXredisReply> _getReply(::cpp::Pointer<redisContext> c){

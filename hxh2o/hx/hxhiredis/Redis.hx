@@ -194,7 +194,7 @@ class Redis {
                 strArr.push(bytes.getData());
             }
         }
-        var resPointer = __redisCommandArgv(context, strArr.length, strArr, lenArr);
+        var resPointer:Pointer<HXredisReply> = __redisCommandArgv(context, strArr.length, strArr, lenArr);
         var res = resPointer.ref;
 
         if(res.error){
@@ -213,14 +213,14 @@ class Redis {
             throw err;
         }
 
-        untyped __cpp__("_freeRedisReply({0})", resPointer);
+        __freeRedisReply(resPointer);
         return retValue.data;
     }
 
     public function command(cmd:String):Dynamic{
         if(context == null)
             throw "Redis not connected";
-        var resPointer = __command(context, cmd);
+        var resPointer:Pointer<HXredisReply> = __command(context, cmd);
         var res = resPointer.ref;
         
         if(res.error){
@@ -238,7 +238,7 @@ class Redis {
             throw err;
         }
 
-        untyped __cpp__("_freeRedisReply({0})", resPointer);
+        __freeRedisReply(resPointer);
         return retValue.data;
     }
 
@@ -300,7 +300,7 @@ class Redis {
     }
 
     function getReply():Dynamic{
-        var resPointer = __getReply(context);
+        var resPointer:Pointer<HXredisReply> = __getReply(context);
         var res = resPointer.ref;
 
         if(res.error){
@@ -319,7 +319,7 @@ class Redis {
             throw err;
         }
 
-        untyped __cpp__("_freeRedisReply({0})", resPointer);
+        __freeRedisReply(resPointer);
         return retValue.data;
     }
 
@@ -358,6 +358,7 @@ class Redis {
                 }
                 data = arr;
         }
+
         return {data: data, status: res.type};
     }
 
@@ -455,6 +456,10 @@ class Redis {
 
     @:extern @:native("redisReconnect")
     public static function __redisReconnect(c:Pointer<RedisContext>):Int return null;
+    
+    @:extern @:native("_freeRedisReply")
+    public static function __freeRedisReply(rep:Pointer<HXredisReply>):Void return null;
+    
 
     #end
 
