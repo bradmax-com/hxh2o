@@ -1,7 +1,6 @@
 package;
 
 import hxh2o.H2oApi;
-import hxh2o.Router;
 
 typedef H2oReq = hxh2o.HXH2O.Request;
 typedef H2oRes = hxh2o.HXH2O.Response;
@@ -23,7 +22,7 @@ class App {
 	function userName(params:Map<String, Dynamic>, req:H2oReq, res:H2oRes) {
 		res.status = 200;
 		res.reason = "OK";
-		res.setBody('user id: ${params.get("id")}');
+		res.setBody('user name: ${params.get("id")}');
 	}
 
 	function user(params:Map<String, Dynamic>, req:H2oReq, res:H2oRes) {
@@ -32,5 +31,9 @@ class App {
 		res.setBody('user id: ${params.get("id")}');
 	}
 
-	function statsCollect(params:Map<String, Dynamic>, req:H2oReq, res:H2oRes) {}
+	function statsCollect(params:Map<String, Dynamic>, req:H2oReq, res:H2oRes) {
+		res.status = 200;
+		res.reason = "OK";
+		res.setBody('hit collected');
+	}
 }
