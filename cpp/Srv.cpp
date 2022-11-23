@@ -29,7 +29,7 @@
 #include <../cpp/Import.h>
 #include <iostream>
 #include <string>
-#include <HXH2O.h>
+#include <hxh2o/HXH2O.h>
 #include <errno.h>
 #include <limits.h>
 #include <netinet/in.h>
@@ -90,7 +90,7 @@ static int main_page(h2o_handler_t *self, h2o_req_t *req){
     request.body = toHxString(req->entity);
     request.headers = toHxMap(req->headers);
 
-    Response resp = HXH2O_obj::request(request);
+    hxh2o::Response resp = hxh2o::HXH2O_obj::request(request);
 
     static h2o_generator_t generator = {NULL, NULL};
 
@@ -325,7 +325,6 @@ Error:
 Dynamic _hxh2o_bind(String host, int port)
 {
     start(host.__s, port);
-    
     printf("%s\n", "This is a string.");
     return "666";
 }

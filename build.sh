@@ -1,7 +1,17 @@
-#gcc simple.c -I/home/tkwiatek/h2o/include/ -I/opt/local/include/ -I/home/tkwiatek/h2o/deps/yoml -L/opt/local/lib -lssl -lcrypto -L/home/tkwiatek/h2o -lh2o -lh2o-evloop -L/opt/local/lib -luv -lz -lpthread -v -o SIMPLE
-
-
-
-
-rsync --exclude h2o --exclude v2.3.0-beta1.tar.gz -r ../hxh2o/ mileena:/home/tkwiatek/hxh2o/
-ssh mileena "cd /home/tkwiatek/hxh2o/ && haxe build.hxml"
+# run haxe build.hxml based on current cpu architecture (arm64 or amd64)
+# and current platform (linux, macos, windows)
+echo "Building"
+ARCH=$(uname -m)
+PLATFORM=$(uname -s)
+echo "Start"
+echo 
+if [ "$ARCH" = "aarch64" ]; then
+    echo "aarch64"
+    haxe build.hxml -D HXCPP_LINUX_ARM64 -D arm -D HXCPP_ARM64
+elif [ "$ARCH" = "x86_64" ]; then
+    echo "x86_64"
+    haxe build.hxml
+elif [ "$ARCH" = "amd64" ]; then
+    echo "amd64"
+    haxe build.hxml
+fi

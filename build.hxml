@@ -2,5 +2,6 @@
 -D no_debug
 -D linux
 -cp src
--main Main
+-cp sample
+-main App
 -cpp build

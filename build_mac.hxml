@@ -1,6 +1,0 @@
--v
--D no_debug
--D macos
--cp src
--main Main
--cpp build

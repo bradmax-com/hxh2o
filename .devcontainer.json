@@ -1,0 +1,23 @@
+{
+    "image": "bradmax/hxh2o",
+    "forwardPorts": [
+        9000,
+        9001
+    ],
+    "workspaceFolder": "/workspaces/hxh2o/",
+    "remoteEnv": {
+        "AWS_ACCESS_KEY_ID": "${localEnv:AWS_ACCESS_KEY_ID}",
+        "AWS_SECRET_ACCESS_KEY": "${localEnv:AWS_SECRET_ACCESS_KEY}",
+        "AWS_DEFAULT_REGION": "${localEnv:AWS_DEFAULT_REGION}",
+        "DEVCONTAINER": "true"
+    },
+    "postCreateCommand": "npm config set cache /tmp --global",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "nadako.vshaxe",
+                "Hoffs.vscode-versionlens"
+            ]
+        }
+    }
+}

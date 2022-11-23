@@ -1,16 +1,16 @@
 {
-    "name": "hxh2o",
-    "license": "MIT",
-    "tags": [
-      "web",
-      "server"
-    ],
-    "classPath": "src",
-    "contributors": [
-      "bradmax.com"
-    ],
-    "releasenote": "initial release",
-    "version": "0.1.0",
-    "url": "https://github.com/bradmax-com/hxh2o",
-    "dependencies": {}
-  }
+  "name": "hxh2o",
+  "license": "MIT",
+  "tags": [
+    "web",
+    "server"
+  ],
+  "classPath": "src",
+  "contributors": [
+    "bradmax.com"
+  ],
+  "releasenote": "initial release",
+  "version": "0.2.0",
+  "url": "https://github.com/bradmax-com/hxh2o",
+  "dependencies": {}
+}
