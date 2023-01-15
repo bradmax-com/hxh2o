@@ -1,120 +1,135 @@
 package hxh2o;
 
-typedef RoutePart = {
-	@:optional var subRoutes:Map<String, RoutePart>;
-	@:optional var callback:Map<String, Dynamic>->Dynamic->Dynamic->Void;
-	@:optional var variableName:String;
-};
+using StringTools;
 
-class Router<I, O> {
-	var routes:RoutePart = {
-		subRoutes: new Map<String, RoutePart>(),
-		callback: null
-	};
+typedef PathSolver = {
+    len: Int,
+    pattern: String,
+    vars: Array<String>,
+    parts: Array<Int>,
+    ereg: EReg,
+    callback: Map<String, Dynamic>->Dynamic->Dynamic->Void,
+}
 
-	public function new() {}
+class Router<I,O>{
 
-	public function print(?r:RoutePart = null, ?path:String = "") {
-		if (r == null)
-			r = routes;
+    var paths:Array<PathSolver> = [];
+    
+    public function new(){}
+    
+    public function addRoute(path:String, func:Map<String, Dynamic>->I->O->Void){
+        var urlEreg = new EReg(":([a-zA-Z0-9._%\\-!~.*]+)", "g");
+        var matches = urlEreg.split(path).length;
+        urlEreg.match(path);
+        var vars = [];
+        try{         
+            var pos = urlEreg.matchedPos();
+            if(pos != null){
+                vars.push(path.substr(pos.pos + 1, pos.len).replace("/",""));
+                var i = 0;
+                while(urlEreg.matchSub(path, pos.pos + pos.len) == true && i++<matches){
+                    pos = urlEreg.matchedPos();
+                    vars.push(path.substr(pos.pos + 1, pos.len).replace("/",""));
+                }
+            }
+            
+        }catch(err:Dynamic){}
+        
+        var e = urlEreg.replace(path, "([a-zA-Z0-9._%\\-!~.*]+)");
+        e = e.replace("/", "\\/");
 
-		if (r.callback != null)
-			Sys.println(path);
+        paths.sort(function(a:Dynamic, b:Dynamic){
+            var ia = a.len;
+            var ib = b.len;
+            if(ia == ib){
+                return checkSemi(a, b);
+            }else
+                return ia < ib ? 1 : -1;
+        });
 
-		if (r.subRoutes == null)
-			return;
+        var urlParts = path.split("/");
+        var parts = [];
+        for(i in 0...urlParts.length){
+            if(urlParts[i].charAt(0) == ":")
+            	parts.push(i);            
+        }
 
-		var keys = r.subRoutes.keys();
+        paths.push({
+            len: path.split("/").length,
+            pattern: path,
+            vars: vars,
+            parts: parts,
+            ereg: new EReg(e, "m"),
+            callback: func
+        });
+    }
 
-		for (i in keys) {
-			var sub = r.subRoutes.get(i);
-			print(sub, path + "/" + i);
-		}
-	}
+    function checkSemi(a:String, b:String):Int{
+        var aa = a.split("/");
+        var ab = b.split("/");
 
-	public function addRoute(path:String, func:Map<String, Dynamic>->I->O->Void) {
-		var apath:Array<String> = path.split("/");
-		var currentRoute = routes.subRoutes;
+        for(i in 0...aa.length){
+            var hasa = aa[i].charAt(0) == ":";
+            var hasb = ab[i].charAt(0) == ":";
+            if(hasa == hasb)
+                continue;
+            else if(hasa)
+                return 1;
+            else
+                return -1;
+        }
 
-		while (apath.length > 0) {
-			var name = apath.shift();
-			var last = apath.length == 0;
-			var variableName:String = name.charAt(0) == ":" ? name.substr(1) : null;
-			name = name.charAt(0) == ":" ? "*" : name;
+        return 0;
+    }
 
-			if (currentRoute.exists(name)) {
-				if (last) {
-					var tmp = currentRoute.get(name);
-					tmp.callback = func;
-					tmp.variableName = variableName;
-				} else {
-					currentRoute = currentRoute.get(name).subRoutes;
-				}
-			} else {
-				if (last) {
-					currentRoute.set(name, {
-						callback: func,
-						variableName: variableName
-					});
-				} else {
-					currentRoute.set(name, {
-						subRoutes: new Map<String, RoutePart>(),
-						variableName: variableName
-					});
-					currentRoute = currentRoute.get(name).subRoutes;
-				}
-			}
-		}
-	}
+    public function print(){
+        for(i in paths)
+            trace(i.pattern);
+    }
 
-	public function resolve(path:String):I->O->Void {
-		var apath:Array<String> = path.split("/");
+    public function resolve(path:String):I->O->Void{        
+        var solver:PathSolver = null;
+        for(i in 0...paths.length)
+            if(paths[i].ereg.match(path)){
+            	solver = paths[i];
+	            break;
+            }
+            
+        if(solver == null)
+            return null; 
+        
+        var pathParts = path.split("/");
+        var values:Array<String> = [];
+        for(i in solver.parts)
+            values.push(pathParts[i]);
+            
+        var func:Map<String, Dynamic>->I->O->Void = null;
+        var params:Map<String, Dynamic> = new Map();
+        
+        for(i in 0...values.length){
+            params.set(solver.vars[i], parse(values[i]));
+        }
 
-		var currentRoute = routes.subRoutes;
-		var func:Map<String, Dynamic>->I->O->Void = null;
-		var params:Map<String, Dynamic> = null;
+        func = solver.callback;
 
-		for (i in apath) {
-			if (currentRoute == null) {
-				return null;
-			} else if (currentRoute.exists(i)) {
-				var node = currentRoute.get(i);
-				currentRoute = node.subRoutes;
-				func = node.callback;
-			} else if (currentRoute.exists("*")) {
-				var node = currentRoute.get("*");
-				if (params == null)
-					params = new Map<String, Dynamic>();
+        return func.bind(params);
+    }
 
-				params.set(node.variableName, parse(i));
-				currentRoute = node.subRoutes;
-				func = node.callback;
-			} else {
-				return null;
-			}
-		}
+    public function parse(value:String):Dynamic{
+        var n = Std.parseInt(value);
+        if(n+"" == value)
+            return n;
 
-		if (func == null)
-			return null;
-		else
-			return func.bind(params);
-	}
+        var n = Std.parseFloat(value);
+        if(n+"" == value)
+            return n;
 
-	public function parse(value:String):Dynamic {
-		var n = Std.parseInt(value);
-		if (n + "" == value)
-			return n;
+        if(value == "true")
+            return true;
 
-		var n = Std.parseFloat(value);
-		if (n + "" == value)
-			return n;
+        if(value == "false")
+            return false;
 
-		if (value == "true")
-			return true;
-
-		if (value == "false")
-			return false;
-
-		return value;
-	}
+        return value;
+    }
 }
