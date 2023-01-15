@@ -28,8 +28,9 @@ RUN haxelib install dox \
     && npm install -g live-server
 
 RUN apt-get update \
-    && apt-get install libssl-dev \
+    && apt-get install -y libssl-dev \
     && cd ~ \
+    && rm -rf openssl
     && git clone https://github.com/openssl/openssl.git \
     && cd openssl \
     && ./config -Wl,--enable-new-dtags,-rpath,'$(LIBRPATH)' \
@@ -38,8 +39,9 @@ RUN apt-get update \
     && openssl version -a
 
 RUN apt-get update \
-    && apt-get install -y cmake zlib1g zlib1g-dev libuv1 libuv1-dev libh2o-evloop-dev \
+    && apt-get install -y cmake zlib1g zlib1g-dev libuv1 libuv1-dev libh2o-evloop-dev protobuf-compiler \
     && cd ~ \
+    && rm -rf h2o
     && git clone https://github.com/h2o/h2o.git \
     && cd h2o \
     && cmake -DWITH_BUNDLED_SSL=on \
