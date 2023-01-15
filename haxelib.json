@@ -5,7 +5,7 @@
     "web",
     "server"
   ],
-  "classPath": "src",
+  "classPath": "src/",
   "contributors": [
     "bradmax.com"
   ],
