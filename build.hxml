@@ -1,7 +1,7 @@
 -v
 -D no_debug
 -D linux
--cp src
+-cp hxh2o
 -cp sample
 -main App
 -cpp build

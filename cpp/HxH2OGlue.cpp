@@ -26,7 +26,7 @@
 #define H2O_USE_LIBUV 1
 
 #include <hxcpp.h>
-#include <../cpp/Import.h>
+#include <HxH2OImport.h>
 #include <iostream>
 #include <string>
 #include <hxh2o/HXH2O.h>
@@ -76,7 +76,6 @@ static inline ::haxe::ds::StringMap toHxMap(h2o_headers_t headers){
         std::string name = std::string(header.name->base, header.name->len);
         String hxvalue = String((char*)value.c_str());
         String hxname = String((char*)name.c_str());
-        // std::cout << hxname << ": " << hxvalue << "\n";
         hxmap->set(hxname, hxvalue);
     }
 
@@ -271,7 +270,7 @@ static int setup_ssl(const char *cert_file, const char *key_file, const char *ci
 }
 
 
-int start(const char * host, int port)
+int start(const char * host, int port, int internalPort)
 {
     h2o_hostconf_t *hostconf;
     h2o_access_log_filehandle_t *logfh;
@@ -308,12 +307,15 @@ int start(const char * host, int port)
         fprintf(stderr, "failed to listen to %s:%i:%s\n", host, port, strerror(errno));
         goto Error;
     }
+    if (create_listener(host, internalPort) != 0) {
+        fprintf(stderr, "failed to listen to %s:%i:%s\n", host, port, strerror(errno));
+        goto Error;
+    }
 
 #if H2O_USE_LIBUV
     uv_run(ctx.loop, UV_RUN_DEFAULT);
 #else
-    while (h2o_evloop_run(ctx.loop, INT32_MAX) == 0)
-        ;
+    while (h2o_evloop_run(ctx.loop, INT32_MAX) == 0);
 #endif
 
 Error:
@@ -322,9 +324,8 @@ Error:
 
 
 
-Dynamic _hxh2o_bind(String host, int port)
+Dynamic _hxh2o_bind(String host, int port, int internalPort)
 {
-    start(host.__s, port);
-    printf("%s\n", "This is a string.");
-    return "666";
+    start(host.__s, port, internalPort);
+    return 0;
 }

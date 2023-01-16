@@ -1,1 +1,1 @@
-docker buildx build -t bradmax/hxh2o .
+docker build -t bradmax/hxh2o .
