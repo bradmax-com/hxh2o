@@ -30,8 +30,8 @@ RUN haxelib install dox \
 RUN apt-get update \
     && apt-get install -y libssl-dev \
     && cd ~ \
-    && rm -rf openssl
-    && git clone https://github.com/openssl/openssl.git \
+    && rm -rf openssl \
+    && git clone --depth 1 --branch OpenSSL_1_1_1s https://github.com/openssl/openssl.git \
     && cd openssl \
     && ./config -Wl,--enable-new-dtags,-rpath,'$(LIBRPATH)' \
     && make \
@@ -39,16 +39,12 @@ RUN apt-get update \
     && openssl version -a
 
 RUN apt-get update \
-    && apt-get install -y cmake zlib1g zlib1g-dev libuv1 libuv1-dev libh2o-evloop-dev protobuf-compiler \
+    && apt-get install -y cmake zlib1g zlib1g-dev libuv1 libuv1-dev libh2o-evloop-dev libhiredis-dev protobuf-compiler \
     && cd ~ \
-    && rm -rf h2o
+    && rm -rf h2o \
     && git clone https://github.com/h2o/h2o.git \
     && cd h2o \
     && cmake -DWITH_BUNDLED_SSL=on \
     && make \
     && make install \
     && make libh2o 
-
-RUN apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*

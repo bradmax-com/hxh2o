@@ -1,1 +1,1 @@
-docker buildx build --platform linux/arm64/v8,linux/amd64 -t bradmax/hxh2o .
+docker build -t bradmax/hxh2o .
